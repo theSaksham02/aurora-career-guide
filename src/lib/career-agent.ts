@@ -523,12 +523,17 @@ What aspect of career growth are you focused on?`,
    * Generate AI response using the LLM
    */
   private async generateAIResponse(userInput: string): Promise<AgentMessage> {
-    // Check if AI provider is set to 'none' - use built-in responses
+    // Check if AI provider is set to 'none' OR if API key is missing
     const provider = import.meta.env.VITE_AI_PROVIDER;
-    if (provider === 'none' || !provider) {
-      // Use built-in intelligent responses - no external API needed
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+
+    // Use built-in responses if: provider is 'none', no provider set, or Groq key missing
+    if (provider === 'none' || !provider || (provider === 'groq' && !groqKey)) {
+      console.log('Using built-in responses (provider:', provider, ', has key:', !!groqKey, ')');
       return this.generateBuiltInResponse(userInput);
     }
+
+    console.log('Using external AI:', provider);
 
     // Build context for external AI
     const stageContext = STAGE_CONTEXT[this.state.stage];
