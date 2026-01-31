@@ -1,7 +1,8 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "aurora-career-guide",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "AI-powered career guidance platform with AURORA - your intelligent career companion",
   "type": "module",
   "scripts": {
     "dev": "vite",
