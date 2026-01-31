@@ -50,9 +50,9 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen font-sf bg-gradient-to-b from-[#F5F8FA] to-[#E8F4F8]">
+    <div className="min-h-screen font-sf">
       {/* Header */}
-      <section className="bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] py-16 lg:py-20">
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-gradient-to-br from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D]">
         <div className="container mx-auto px-6 lg:px-10">
           <div className="flex flex-col md:flex-row items-center gap-8">
             {/* Avatar */}
@@ -141,8 +141,8 @@ export default function Profile() {
                   key={interest}
                   onClick={() => toggleInterest(interest)}
                   className={`px-4 py-2 rounded-full border-2 transition-all ${interests.includes(interest)
-                      ? 'bg-[#0B2B3D] text-white border-[#0B2B3D]'
-                      : 'bg-white text-[#0B2B3D] border-gray-200 hover:border-[#5D93A9]'
+                    ? 'bg-[#0B2B3D] text-white border-[#0B2B3D]'
+                    : 'bg-white text-[#0B2B3D] border-gray-200 hover:border-[#5D93A9]'
                     }`}
                 >
                   {interests.includes(interest) && <Check className="w-4 h-4 inline mr-1" />}
@@ -158,8 +158,8 @@ export default function Profile() {
               onClick={handleSave}
               disabled={!hasChanges}
               className={`px-8 py-6 rounded-xl font-semibold text-lg transition-all ${hasChanges
-                  ? 'bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white hover:opacity-90'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white hover:opacity-90'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
             >
               <Save className="h-5 w-5 mr-2" />

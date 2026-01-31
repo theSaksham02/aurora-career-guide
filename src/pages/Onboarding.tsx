@@ -336,8 +336,8 @@ export default function Onboarding() {
                 <button
                   onClick={() => selectAnswer('A')}
                   className={`w-full text-left p-5 rounded-xl border-2 transition-all ${answers[currentQuestion] === 'A'
-                      ? 'border-[#0B2B3D] bg-[#0B2B3D]/5'
-                      : 'border-[#0B2B3D]/10 hover:border-[#5D93A9]/50 bg-white/50'
+                    ? 'border-[#0B2B3D] bg-[#0B2B3D]/5'
+                    : 'border-[#0B2B3D]/10 hover:border-[#5D93A9]/50 bg-white/50'
                     }`}
                 >
                   <div className="flex items-start gap-4">
@@ -345,8 +345,8 @@ export default function Onboarding() {
                       <p className="text-[#0B2B3D]">{trainingQuestions[currentQuestion].optionA}</p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion] === 'A'
-                        ? 'border-[#0B2B3D] bg-[#0B2B3D]'
-                        : 'border-[#5D93A9]/50'
+                      ? 'border-[#0B2B3D] bg-[#0B2B3D]'
+                      : 'border-[#5D93A9]/50'
                       }`}>
                       {answers[currentQuestion] === 'A' && <Check className="w-4 h-4 text-white" />}
                     </div>
@@ -356,8 +356,8 @@ export default function Onboarding() {
                 <button
                   onClick={() => selectAnswer('B')}
                   className={`w-full text-left p-5 rounded-xl border-2 transition-all ${answers[currentQuestion] === 'B'
-                      ? 'border-[#0B2B3D] bg-[#0B2B3D]/5'
-                      : 'border-[#0B2B3D]/10 hover:border-[#5D93A9]/50 bg-white/50'
+                    ? 'border-[#0B2B3D] bg-[#0B2B3D]/5'
+                    : 'border-[#0B2B3D]/10 hover:border-[#5D93A9]/50 bg-white/50'
                     }`}
                 >
                   <div className="flex items-start gap-4">
@@ -365,8 +365,8 @@ export default function Onboarding() {
                       <p className="text-[#0B2B3D]">{trainingQuestions[currentQuestion].optionB}</p>
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion] === 'B'
-                        ? 'border-[#0B2B3D] bg-[#0B2B3D]'
-                        : 'border-[#5D93A9]/50'
+                      ? 'border-[#0B2B3D] bg-[#0B2B3D]'
+                      : 'border-[#5D93A9]/50'
                       }`}>
                       {answers[currentQuestion] === 'B' && <Check className="w-4 h-4 text-white" />}
                     </div>
@@ -401,10 +401,10 @@ export default function Onboarding() {
                       key={idx}
                       onClick={() => setCurrentQuestion(idx)}
                       className={`w-2 h-2 rounded-full transition-all ${idx === currentQuestion
-                          ? 'bg-[#0B2B3D] w-6'
-                          : answers[idx]
-                            ? 'bg-[#5D93A9]'
-                            : 'bg-[#0B2B3D]/20'
+                        ? 'bg-[#0B2B3D] w-6'
+                        : answers[idx]
+                          ? 'bg-[#5D93A9]'
+                          : 'bg-[#0B2B3D]/20'
                         }`}
                     />
                   ))}
@@ -480,73 +480,79 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen font-sf bg-gradient-to-b from-[#F5F8FA] via-[#F0F7FA] to-[#E8F4F8]">
-      {/* Header */}
-      <div className="border-b border-[#0B2B3D]/10 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
-        <div className="container mx-auto px-6 lg:px-10 py-4">
-          <h1 className="text-xl font-bold text-[#0B2B3D]">Onboarding</h1>
+    <div className="min-h-screen font-sf">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-12 lg:pt-40 lg:pb-16 bg-gradient-to-br from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#A1D1E5]/10 rounded-full blur-[100px]" />
         </div>
-      </div>
+        <div className="container mx-auto px-6 lg:px-10 relative z-10">
+          <h1 className="text-3xl lg:text-5xl font-bold text-white mb-2">Onboarding</h1>
+          <p className="text-lg text-white/60">Complete your setup to get started with AURORA</p>
+        </div>
+      </section>
 
-      {/* Stepper */}
-      <div className="container mx-auto px-6 lg:px-10 py-10">
-        <div className="max-w-4xl mx-auto">
-          {/* Step Indicator */}
-          <div className="flex items-center justify-between mb-12 overflow-x-auto pb-4">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <button
-                  onClick={() => goToStep(step.id)}
-                  className="flex flex-col items-center group"
-                  disabled={step.id > currentStep && !completedSteps.includes(currentStep)}
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${completedSteps.includes(step.id)
+      {/* Main Content */}
+      <section className="bg-gradient-to-b from-[#E8F4F8] via-[#F0F7FA] to-[#E8F4F8] py-10">
+        <div className="container mx-auto px-6 lg:px-10">
+          <div className="max-w-4xl mx-auto">
+            {/* Step Indicator */}
+            <div className="flex items-center justify-between mb-12 overflow-x-auto pb-4">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <button
+                    onClick={() => goToStep(step.id)}
+                    className="flex flex-col items-center group"
+                    disabled={step.id > currentStep && !completedSteps.includes(currentStep)}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${completedSteps.includes(step.id)
                       ? 'bg-[#0B2B3D] text-white cursor-pointer'
                       : step.id === currentStep
                         ? 'bg-emerald-500 text-white ring-4 ring-emerald-100'
                         : 'bg-[#0B2B3D]/30 text-white cursor-not-allowed'
-                    }`}>
-                    {completedSteps.includes(step.id) ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <span className="text-sm font-bold">{step.id}</span>
-                    )}
-                  </div>
-                  <div className="mt-2 text-center">
-                    <p className={`text-sm font-medium whitespace-nowrap ${step.id === currentStep ? 'text-[#0B2B3D]' : 'text-[#5D93A9]'
                       }`}>
-                      {step.label}
-                    </p>
-                    <p className="text-xs text-[#5D93A9] hidden sm:block">{step.description}</p>
-                  </div>
-                </button>
+                      {completedSteps.includes(step.id) ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <span className="text-sm font-bold">{step.id}</span>
+                      )}
+                    </div>
+                    <div className="mt-2 text-center">
+                      <p className={`text-sm font-medium whitespace-nowrap ${step.id === currentStep ? 'text-[#0B2B3D]' : 'text-[#5D93A9]'
+                        }`}>
+                        {step.label}
+                      </p>
+                      <p className="text-xs text-[#5D93A9] hidden sm:block">{step.description}</p>
+                    </div>
+                  </button>
 
-                {index < steps.length - 1 && (
-                  <div className={`w-16 lg:w-24 h-0.5 mx-2 ${completedSteps.includes(step.id) ? 'bg-[#0B2B3D]' : 'bg-[#0B2B3D]/20'
-                    }`} />
-                )}
+                  {index < steps.length - 1 && (
+                    <div className={`w-16 lg:w-24 h-0.5 mx-2 ${completedSteps.includes(step.id) ? 'bg-[#0B2B3D]' : 'bg-[#0B2B3D]/20'
+                      }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Progress Bar */}
+            <div className={`${glassCard} rounded-xl p-4 mb-8`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-[#5D93A9]">Overall Progress</span>
+                <span className="text-sm font-bold text-[#074C6B]">{Math.round((completedSteps.length / 4) * 100)}%</span>
               </div>
-            ))}
-          </div>
-
-          {/* Progress Bar */}
-          <div className={`${glassCard} rounded-xl p-4 mb-8`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[#5D93A9]">Overall Progress</span>
-              <span className="text-sm font-bold text-[#074C6B]">{Math.round((completedSteps.length / 4) * 100)}%</span>
+              <div className="h-2 bg-[#0B2B3D]/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#074C6B] to-[#5D93A9] rounded-full transition-all duration-500"
+                  style={{ width: `${(completedSteps.length / 4) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="h-2 bg-[#0B2B3D]/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#074C6B] to-[#5D93A9] rounded-full transition-all duration-500"
-                style={{ width: `${(completedSteps.length / 4) * 100}%` }}
-              />
-            </div>
-          </div>
 
-          {/* Step Content */}
-          {renderStepContent()}
+            {/* Step Content */}
+            {renderStepContent()}
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

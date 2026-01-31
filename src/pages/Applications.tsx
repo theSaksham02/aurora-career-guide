@@ -208,7 +208,7 @@ export default function Applications() {
       )}
 
       {/* Hero Section */}
-      <section className="relative py-16 lg:py-24 bg-gradient-to-b from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
+      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 bg-gradient-to-br from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-[#A1D1E5]/10 rounded-full blur-[80px]" />
         </div>

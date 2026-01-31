@@ -33,7 +33,7 @@ export default function CareerExploration() {
   return (
     <div className="min-h-screen font-sf">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 bg-gradient-to-b from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-gradient-to-br from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-[#A1D1E5]/10 rounded-full blur-[100px] animate-pulse" />
@@ -46,13 +46,13 @@ export default function CareerExploration() {
               <Compass className="w-4 h-4" />
               CAREER EXPLORATION
             </div>
-            
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
               Discover Your
               <br />
               <span className="text-[#A1D1E5]">Career Path</span>
             </h1>
-            
+
             <p className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
               Select your current stage to receive personalized, stage-aware guidance from AURORA
             </p>
@@ -77,11 +77,11 @@ export default function CareerExploration() {
                   <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${stage.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg`}>
                     <stage.icon className="h-10 w-10 text-white" />
                   </div>
-                  
+
                   {/* Content */}
                   <h2 className="text-2xl font-bold text-[#0B2B3D] mb-3">{stage.title}</h2>
                   <p className="text-lg text-[#5D93A9] leading-relaxed mb-6">{stage.description}</p>
-                  
+
                   {/* CTA */}
                   <div className="flex items-center gap-2 text-[#074C6B] font-semibold group-hover:text-[#0B2B3D] transition-colors">
                     Explore Path
@@ -96,14 +96,14 @@ export default function CareerExploration() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Sparkles className="w-8 h-8 text-[#A1D1E5]" />
               </div>
-              
+
               <h3 className="text-2xl font-bold text-[#0B2B3D] mb-4">Not Sure Which Stage Fits You?</h3>
               <p className="text-lg text-[#5D93A9] max-w-xl mx-auto mb-8">
                 AURORA can help you identify where you are in your career journey and recommend the best path forward.
               </p>
-              
-              <Button 
-                asChild 
+
+              <Button
+                asChild
                 className="bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] hover:opacity-90 text-white font-semibold text-lg py-6 px-10 rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
                 <Link to="/dashboard" className="flex items-center gap-2">
