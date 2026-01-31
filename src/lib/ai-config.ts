@@ -4,7 +4,7 @@ export const AI_CONFIG = {
   openrouterApiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
   groqApiKey: import.meta.env.VITE_GROQ_API_KEY,
   openaiApiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  model: import.meta.env.VITE_AI_MODEL || 'meta-llama/llama-3.1-8b-instruct:free',
+  model: import.meta.env.VITE_AI_MODEL || 'google/gemini-2.0-flash-exp:free',
   endpoint: import.meta.env.VITE_AI_ENDPOINT,
 };
 
@@ -15,17 +15,18 @@ export const PROVIDER_ENDPOINTS = {
   openai: 'https://api.openai.com/v1',
 };
 
-// Free models available on OpenRouter
+// Free models available on OpenRouter (January 2026)
 export const FREE_MODELS = {
   openrouter: [
-    'meta-llama/llama-3.1-8b-instruct:free',
-    'google/gemma-2-9b-it:free',
-    'mistralai/mistral-7b-instruct:free',
-    'microsoft/phi-3-mini-128k-instruct:free',
+    'google/gemini-2.0-flash-exp:free',
+    'google/gemini-exp-1206:free',
+    'mistralai/mistral-small-3.1-24b-instruct:free',
+    'meta-llama/llama-4-scout:free',
+    'nvidia/llama-3.1-nemotron-70b-instruct:free',
   ],
   groq: [
-    'llama-3.1-8b-instant',
-    'llama-3.1-70b-versatile',
+    'llama-3.3-70b-versatile',
     'mixtral-8x7b-32768',
+    'gemma2-9b-it',
   ],
 };
