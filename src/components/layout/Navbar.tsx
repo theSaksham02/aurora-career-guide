@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/chat", label: "Chat" },
   { href: "/career-exploration", label: "Explore" },
   { href: "/applications", label: "Applications" },
   { href: "/onboarding", label: "Onboarding" },
@@ -38,8 +39,8 @@ export function Navbar() {
                   key={link.href}
                   to={link.href}
                   className={`px-5 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ${location.pathname === link.href
-                      ? 'bg-white/20 text-white shadow-inner'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    ? 'bg-white/20 text-white shadow-inner'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
                     }`}
                 >
                   {link.label}
@@ -90,8 +91,8 @@ export function Navbar() {
                     key={link.href}
                     to={link.href}
                     className={`text-lg font-medium py-3 px-4 rounded-xl transition-colors ${location.pathname === link.href
-                        ? "bg-white/20 text-white"
-                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                      ? "bg-white/20 text-white"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
                       }`}
                     onClick={() => setIsOpen(false)}
                   >
