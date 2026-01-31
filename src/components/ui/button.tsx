@@ -5,28 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] hover:shadow-md",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-muted hover:text-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02]",
+        outline: "border-2 border-primary/20 bg-background hover:bg-primary/5 hover:border-primary/40 text-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02] hover:shadow-md",
         ghost: "hover:bg-muted hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // CTA button - Orange accent with glow effect
-        cta: "bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.02] shadow-accent hover:shadow-lg font-semibold",
-        // Hero button - Works on gradient backgrounds
-        hero: "bg-background/10 text-primary-foreground border border-primary-foreground/20 backdrop-blur-sm hover:bg-background/20 hover:scale-[1.02]",
-        // Hero solid - Solid white button for hero sections
-        "hero-solid": "bg-background text-primary hover:bg-background/90 hover:scale-[1.02] shadow-md",
+        // CTA button - Sky Blue accent with premium glow
+        cta: "bg-gradient-to-r from-[#5D93A9] to-[#A1D1E5] text-[#0B2B3D] hover:from-[#A1D1E5] hover:to-[#5D93A9] hover:scale-[1.02] shadow-lg hover:shadow-xl font-semibold active:scale-[0.98]",
+        // Hero button - Glassmorphism on gradient backgrounds
+        hero: "bg-white/10 text-white border border-white/20 backdrop-blur-md hover:bg-white/20 hover:scale-[1.02] hover:shadow-lg",
+        // Hero solid - Clean white button
+        "hero-solid": "bg-white text-[#0B2B3D] hover:bg-white/95 hover:scale-[1.02] shadow-lg hover:shadow-xl font-semibold active:scale-[0.98]",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-12 rounded-md px-8 text-base",
-        xl: "h-14 rounded-md px-10 text-lg",
+        default: "h-10 px-5 py-2",
+        sm: "h-9 rounded-lg px-4",
+        lg: "h-12 rounded-lg px-8 text-base",
+        xl: "h-14 rounded-xl px-10 text-lg",
         icon: "h-10 w-10",
       },
     },
