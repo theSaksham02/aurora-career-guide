@@ -15,6 +15,7 @@ import Applications from "./pages/Applications";
 import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import ChatPage from "./pages/ChatPage";
+import RoadmapPage from "./pages/RoadmapPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/chat" element={<ChatPage />} />
+              <Route path="/roadmap" element={<RoadmapPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
