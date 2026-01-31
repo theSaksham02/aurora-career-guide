@@ -1,25 +1,29 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, XCircle } from "lucide-react";
+import { Eye, Edit, XCircle, FileText, TrendingUp, Clock, Award, Filter, Plus, Briefcase } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
-import { mockApplications, applicationTimelineData, Application, ApplicationStatus } from "@/data/mockData";
+import { mockApplications, applicationTimelineData, ApplicationStatus } from "@/data/mockData";
 
 const statusColors: Record<ApplicationStatus, string> = {
-  pending: "hsl(45, 93%, 47%)",
-  accepted: "hsl(142, 71%, 45%)",
-  rejected: "hsl(0, 84%, 60%)",
-  withdrawn: "hsl(0, 0%, 60%)",
+  pending: "#5D93A9",
+  accepted: "#22c55e",
+  rejected: "#ef4444",
+  withdrawn: "#9ca3af",
 };
 
-const statusBadgeVariants: Record<ApplicationStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  pending: "secondary",
-  accepted: "default",
-  rejected: "destructive",
-  withdrawn: "outline",
+const statusBadgeStyles: Record<ApplicationStatus, string> = {
+  pending: "bg-[#A1D1E5]/30 text-[#074C6B] border-[#A1D1E5]/50",
+  accepted: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  rejected: "bg-red-100 text-red-700 border-red-200",
+  withdrawn: "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 const filters: ApplicationStatus[] = ["pending", "accepted", "rejected", "withdrawn"];
+
+// Glass card styles
+const glassCard = "bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_rgba(11,43,61,0.1)]";
+const glassCardDark = "bg-gradient-to-br from-[#0B2B3D] to-[#074C6B] backdrop-blur-xl border border-white/10";
 
 export default function Applications() {
   const [activeFilter, setActiveFilter] = useState<ApplicationStatus | "all">("all");
@@ -40,189 +44,224 @@ export default function Applications() {
   }));
 
   const stats = [
-    { label: "Total Applications", value: mockApplications.length },
-    { label: "Success Rate", value: `${Math.round((statusCounts.accepted || 0) / mockApplications.length * 100)}%` },
-    { label: "Avg Response Time", value: "5 days" },
-    { label: "Next Interview", value: "Jan 25" },
+    { label: "Total Applications", value: mockApplications.length, icon: FileText, gradient: "from-[#A1D1E5] to-[#5D93A9]" },
+    { label: "Success Rate", value: `${Math.round((statusCounts.accepted || 0) / mockApplications.length * 100)}%`, icon: TrendingUp, gradient: "from-[#5D93A9] to-[#074C6B]" },
+    { label: "Avg Response", value: "5 days", icon: Clock, gradient: "from-[#074C6B] to-[#0B2B3D]" },
+    { label: "Accepted", value: statusCounts.accepted || 0, icon: Award, gradient: "from-emerald-400 to-emerald-600" },
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30 py-16">
-      <div className="container mx-auto px-6">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-hero text-foreground mb-4">Your Applications</h1>
-          <p className="text-body text-muted-foreground">
-            Track and manage your job applications
-          </p>
+    <div className="min-h-screen font-sf">
+      {/* Hero Section */}
+      <section className="relative py-16 lg:py-24 bg-gradient-to-b from-[#0B2B3D] via-[#074C6B] to-[#0B2B3D] overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-[#A1D1E5]/10 rounded-full blur-[80px]" />
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className="bg-background rounded-lg border border-border p-6 text-center animate-slide-up"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
-              <div className="text-small text-muted-foreground">{stat.label}</div>
+        <div className="container mx-auto px-6 lg:px-10 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-[#A1D1E5] text-sm font-semibold mb-4 backdrop-blur-sm">
+                <Briefcase className="w-4 h-4" />
+                APPLICATION TRACKING
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
+                Your <span className="text-[#A1D1E5]">Applications</span>
+              </h1>
+              <p className="text-xl text-white/60 mt-4 max-w-xl">
+                Track, manage, and optimize your job applications
+              </p>
             </div>
-          ))}
-        </div>
 
-        {/* Filter Buttons */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <Button
-            variant={activeFilter === "all" ? "default" : "outline"}
-            onClick={() => setActiveFilter("all")}
-          >
-            All ({mockApplications.length})
-          </Button>
-          {filters.map((filter) => (
-            <Button
-              key={filter}
-              variant={activeFilter === filter ? "default" : "outline"}
-              onClick={() => setActiveFilter(filter)}
-              className="capitalize"
-            >
-              {filter} ({statusCounts[filter] || 0})
+            <Button className="bg-white text-[#0B2B3D] hover:bg-[#A1D1E5] font-semibold text-lg py-6 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all w-fit">
+              <Plus className="w-5 h-5 mr-2" />
+              Add Application
             </Button>
-          ))}
+          </div>
         </div>
+      </section>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Applications Table */}
-          <div className="lg:col-span-8">
-            <div className="bg-background rounded-lg border border-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border bg-muted/50">
-                      <th className="text-left p-4 text-small font-semibold text-foreground">Company</th>
-                      <th className="text-left p-4 text-small font-semibold text-foreground">Role</th>
-                      <th className="text-left p-4 text-small font-semibold text-foreground">Status</th>
-                      <th className="text-left p-4 text-small font-semibold text-foreground hidden md:table-cell">Applied</th>
-                      <th className="text-left p-4 text-small font-semibold text-foreground hidden lg:table-cell">Next Step</th>
-                      <th className="text-right p-4 text-small font-semibold text-foreground">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredApplications.map((app) => (
-                      <tr
-                        key={app.id}
-                        className="border-b border-border hover:bg-muted/30 transition-colors"
-                      >
-                        <td className="p-4 text-foreground font-medium">{app.company}</td>
-                        <td className="p-4 text-muted-foreground">{app.role}</td>
-                        <td className="p-4">
-                          <Badge 
-                            variant={statusBadgeVariants[app.status]}
-                            className="capitalize"
-                          >
-                            {app.status}
-                          </Badge>
-                        </td>
-                        <td className="p-4 text-muted-foreground hidden md:table-cell">{app.appliedDate}</td>
-                        <td className="p-4 text-small text-muted-foreground hidden lg:table-cell">{app.nextStep}</td>
-                        <td className="p-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon">
-                              <XCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
+      {/* Main Content */}
+      <section className="py-12 lg:py-20 bg-gradient-to-b from-[#E8F4F8] via-[#F0F7FA] to-[#E0EEF4]">
+        <div className="container mx-auto px-6 lg:px-10">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`${glassCard} rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(11,43,61,0.12)] hover:-translate-y-1`}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-4 shadow-lg`}>
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-[#0B2B3D] mb-1">{stat.value}</div>
+                <div className="text-sm text-[#5D93A9] font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Filter Buttons */}
+          <div className={`${glassCard} rounded-2xl p-4 mb-8 flex flex-wrap items-center gap-3`}>
+            <Filter className="w-5 h-5 text-[#5D93A9]" />
+            <Button
+              variant={activeFilter === "all" ? "default" : "outline"}
+              onClick={() => setActiveFilter("all")}
+              className={activeFilter === "all" ? "bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white" : "hover:bg-[#0B2B3D]/5 text-[#0B2B3D]"}
+            >
+              All ({mockApplications.length})
+            </Button>
+            {filters.map((filter) => (
+              <Button
+                key={filter}
+                variant={activeFilter === filter ? "default" : "outline"}
+                onClick={() => setActiveFilter(filter)}
+                className={`capitalize ${activeFilter === filter ? "bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white" : "hover:bg-[#0B2B3D]/5 text-[#0B2B3D]"}`}
+              >
+                {filter} ({statusCounts[filter] || 0})
+              </Button>
+            ))}
+          </div>
+
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+            {/* Applications Table */}
+            <div className="lg:col-span-8">
+              <div className={`${glassCard} rounded-2xl overflow-hidden`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-[#0B2B3D]/10 bg-[#0B2B3D]/5">
+                        <th className="text-left p-5 text-sm font-semibold text-[#0B2B3D]">Company</th>
+                        <th className="text-left p-5 text-sm font-semibold text-[#0B2B3D]">Role</th>
+                        <th className="text-left p-5 text-sm font-semibold text-[#0B2B3D]">Status</th>
+                        <th className="text-left p-5 text-sm font-semibold text-[#0B2B3D] hidden md:table-cell">Applied</th>
+                        <th className="text-left p-5 text-sm font-semibold text-[#0B2B3D] hidden lg:table-cell">Next Step</th>
+                        <th className="text-right p-5 text-sm font-semibold text-[#0B2B3D]">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Pie Chart */}
-            <div className="bg-background rounded-lg border border-border p-6">
-              <h3 className="font-semibold text-foreground mb-4">Status Distribution</h3>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={70}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                    </thead>
+                    <tbody>
+                      {filteredApplications.map((app) => (
+                        <tr
+                          key={app.id}
+                          className="border-b border-[#0B2B3D]/5 hover:bg-[#0B2B3D]/5 transition-colors"
+                        >
+                          <td className="p-5 text-[#0B2B3D] font-semibold">{app.company}</td>
+                          <td className="p-5 text-[#5D93A9]">{app.role}</td>
+                          <td className="p-5">
+                            <Badge
+                              variant="outline"
+                              className={`capitalize ${statusBadgeStyles[app.status]}`}
+                            >
+                              {app.status}
+                            </Badge>
+                          </td>
+                          <td className="p-5 text-[#5D93A9] hidden md:table-cell">{app.appliedDate}</td>
+                          <td className="p-5 text-sm text-[#5D93A9] hidden lg:table-cell">{app.nextStep}</td>
+                          <td className="p-5 text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button variant="ghost" size="icon" className="hover:bg-[#A1D1E5]/20 text-[#074C6B]">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="hover:bg-[#A1D1E5]/20 text-[#074C6B]">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="hover:bg-red-100 text-red-500">
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
                       ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex flex-wrap justify-center gap-4 mt-4">
-                {pieData.map((entry) => (
-                  <div key={entry.name} className="flex items-center gap-2 text-sm">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: entry.color }}
-                    />
-                    <span className="capitalize text-muted-foreground">{entry.name}</span>
-                  </div>
-                ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
-            {/* Area Chart */}
-            <div className="bg-background rounded-lg border border-border p-6">
-              <h3 className="font-semibold text-foreground mb-4">Application Timeline</h3>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={applicationTimelineData}>
-                    <XAxis 
-                      dataKey="date" 
-                      tick={{ fill: 'hsl(0, 0%, 40%)', fontSize: 11 }} 
-                      axisLine={false} 
-                      tickLine={false} 
-                    />
-                    <YAxis 
-                      tick={{ fill: 'hsl(0, 0%, 40%)', fontSize: 11 }} 
-                      axisLine={false} 
-                      tickLine={false} 
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(0, 0%, 100%)', 
-                        border: '1px solid hsl(0, 0%, 90%)',
-                        borderRadius: '8px'
-                      }} 
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="applications"
-                      stroke="hsl(220, 100%, 32%)"
-                      fill="hsl(220, 100%, 32%)"
-                      fillOpacity={0.2}
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+            {/* Charts */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Pie Chart */}
+              <div className={`${glassCard} rounded-2xl p-6`}>
+                <h3 className="font-bold text-[#0B2B3D] text-lg mb-4">Status Distribution</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={40}
+                        outerRadius={70}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex flex-wrap justify-center gap-4 mt-4">
+                  {pieData.map((entry) => (
+                    <div key={entry.name} className="flex items-center gap-2 text-sm">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: entry.color }}
+                      />
+                      <span className="capitalize text-[#5D93A9]">{entry.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Area Chart */}
+              <div className={`${glassCard} rounded-2xl p-6`}>
+                <h3 className="font-bold text-[#0B2B3D] text-lg mb-4">Application Timeline</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={applicationTimelineData}>
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: '#5D93A9', fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fill: '#5D93A9', fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'rgba(255,255,255,0.95)',
+                          border: '1px solid rgba(11,43,61,0.1)',
+                          borderRadius: '12px',
+                          backdropFilter: 'blur(10px)'
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="applications"
+                        stroke="#074C6B"
+                        fill="url(#chartGradient)"
+                        strokeWidth={2}
+                      />
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#A1D1E5" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="#A1D1E5" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
