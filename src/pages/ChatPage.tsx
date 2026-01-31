@@ -3,51 +3,67 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, Bot, User, Paperclip, Loader2, Sparkles, RefreshCw, ArrowUp } from "lucide-react";
+import {
+    User,
+    Paperclip,
+    Loader2,
+    Sparkles,
+    RefreshCw,
+    ArrowUp,
+    FileText,
+    MessageSquare,
+    Target,
+    Briefcase,
+    Zap
+} from "lucide-react";
 import { careerAgent, AgentMessage } from "@/lib/career-agent";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Set worker source for PDF.js - Ensure version matches installed package
-// Using a specific version to avoid mismatch errors if possible, or dynamic
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+// Suggested prompts for demo
+const suggestedPrompts = [
+    { icon: FileText, label: "Analyze my resume", prompt: "I'd like to upload my resume for analysis" },
+    { icon: MessageSquare, label: "Practice interview", prompt: "Help me prepare for a software engineering interview at Google" },
+    { icon: Target, label: "Career roadmap", prompt: "Create a personalized career roadmap from Junior to Senior Developer" },
+    { icon: Briefcase, label: "Job search tips", prompt: "What are the best strategies for landing my first tech job?" },
+];
 
 export default function ChatPage() {
     const [messages, setMessages] = useState<AgentMessage[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Initialize chat or load history
     useEffect(() => {
         const history = careerAgent.getHistory();
-        if (history.length === 0) {
-            handleSend("Hello!", true);
-        } else {
+        if (history.length > 0) {
             setMessages(history);
+            setShowWelcome(false);
         }
     }, []);
 
-    // Auto-scroll logic
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages, isLoading]);
 
-    const handleSend = async (content: string = input, hidden: boolean = false) => {
+    const handleSend = async (content: string = input) => {
         if (!content.trim()) return;
 
-        if (!hidden) {
-            const userMsg: AgentMessage = {
-                id: Date.now().toString(),
-                role: "user",
-                content: content,
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, userMsg]);
-        }
+        setShowWelcome(false);
+
+        const userMsg: AgentMessage = {
+            id: Date.now().toString(),
+            role: "user",
+            content: content,
+            timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, userMsg]);
 
         setInput("");
         setIsLoading(true);
@@ -73,6 +89,7 @@ export default function ChatPage() {
         }
 
         setIsUploading(true);
+        setShowWelcome(false);
 
         try {
             const arrayBuffer = await file.arrayBuffer();
@@ -114,52 +131,51 @@ export default function ChatPage() {
     const handleReset = () => {
         careerAgent.reset();
         setMessages([]);
-        handleSend("Hello!", true);
+        setShowWelcome(true);
     };
 
     const formatContent = (content: string) => {
         const lines = content.split('\n');
         return lines.map((line, i) => {
-            // Bold text
-            line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Headers
+            line = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#A1D1E5]">$1</strong>');
             if (line.startsWith('## ')) return <h4 key={i} className="text-lg font-semibold mt-4 mb-2 text-white">{line.substring(3)}</h4>;
             if (line.startsWith('### ')) return <h5 key={i} className="font-semibold mt-3 mb-1 text-white/90">{line.substring(4)}</h5>;
-            // Lists
             if (line.startsWith('- ') || line.startsWith('• ')) return <li key={i} className="ml-4 text-white/90" dangerouslySetInnerHTML={{ __html: line.substring(2) }} />;
             if (line.match(/^(\d+)\.\s/)) {
                 const match = line.match(/^(\d+)\.\s(.+)/);
                 return <li key={i} className="ml-4 list-decimal text-white/90" dangerouslySetInnerHTML={{ __html: match ? match[2] : line }} />;
             }
-            // Paragraphs
             if (line.trim()) return <p key={i} className="mb-2 leading-relaxed text-white/90" dangerouslySetInnerHTML={{ __html: line }} />;
             return <div key={i} className="h-2" />;
         });
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-120px)] mt-32 container mx-auto max-w-5xl px-4 md:px-0">
+        <div className="flex flex-col h-[calc(100vh-100px)] mt-24 container mx-auto max-w-5xl px-4 md:px-0">
 
-            {/* Glassmorphism Header */}
-            <div className="absolute top-20 left-0 right-0 z-10 px-4 md:px-0 container mx-auto max-w-5xl">
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 flex items-center justify-between shadow-lg">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] w-10 h-10 rounded-xl flex items-center justify-center shadow-inner">
-                            <Sparkles className="w-5 h-5 text-[#0B2B3D]" />
+            {/* Header Bar */}
+            <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-2xl mb-4">
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <div className="bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg">
+                            <Sparkles className="w-6 h-6 text-[#0B2B3D]" />
                         </div>
-                        <div>
-                            <h1 className="text-lg font-bold text-white tracking-tight">AURORA AI</h1>
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <p className="text-xs text-white/70 font-medium">Online • Powered by Groq Llama 3</p>
-                            </div>
-                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0B2B3D] animate-pulse" />
                     </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                            AURORA AI
+                            <span className="text-xs font-medium px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">PRO</span>
+                        </h1>
+                        <p className="text-xs text-white/50 font-medium">Your AI Career Intelligence Partner</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleReset}
-                        className="text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                        className="text-white/50 hover:text-white hover:bg-white/10"
                     >
                         <RefreshCw className="w-4 h-4 mr-2" />
                         New Chat
@@ -167,86 +183,128 @@ export default function ChatPage() {
                 </div>
             </div>
 
-            {/* Messages Scroll Area */}
-            <ScrollArea className="flex-1 rounded-3xl mt-24 mb-6 bg-gradient-to-b from-[#0B2B3D]/50 to-transparent backdrop-blur-sm border border-white/5 shadow-inner">
-                <div className="p-6 space-y-8 min-h-full">
-                    {/* Welcome Message Empty State */}
-                    {messages.length === 0 && !isLoading && (
-                        <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4 opacity-50">
-                            <Bot className="w-16 h-16 text-white/20" />
-                            <p className="text-white/40 text-lg">Start a conversation with AURORA</p>
-                        </div>
-                    )}
+            {/* Main Chat Area */}
+            <div className="flex-1 overflow-hidden rounded-3xl bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/5">
+                <ScrollArea className="h-full">
+                    <div className="p-6 min-h-full">
 
-                    {messages.map((msg, index) => (
-                        <div
-                            key={msg.id || index}
-                            className={`flex gap-4 group ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
-                        >
-                            {/* Avatar */}
-                            <Avatar className={`w-10 h-10 border-2 shadow-lg mt-1 shrink-0 ${msg.role === 'user' ? 'border-white/20' : 'border-[#A1D1E5]/50'}`}>
-                                <AvatarImage src={msg.role === 'user' ? undefined : "/aurora-avatar.png"} />
-                                <AvatarFallback className={msg.role === 'user' ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white' : 'bg-[#0B2B3D] text-[#A1D1E5]'}>
-                                    {msg.role === "user" ? <User className="w-5 h-5" /> : "A"}
-                                </AvatarFallback>
-                            </Avatar>
-
-                            {/* Message Bubble */}
-                            <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                                <div
-                                    className={`px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md text-[15px] leading-relaxed transition-all duration-300 ${msg.role === "user"
-                                        ? "bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] border border-white/10 text-white rounded-tr-sm"
-                                        : "bg-white/10 border border-white/10 text-slate-100 rounded-tl-sm hover:bg-white/15"
-                                        }`}
-                                >
-                                    <div className="prose prose-invert max-w-none">
-                                        {formatContent(msg.content)}
+                        {/* Welcome Screen */}
+                        {showWelcome && messages.length === 0 && (
+                            <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in-up">
+                                {/* Hero */}
+                                <div className="relative mb-8">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-[#A1D1E5]/20 to-[#5D93A9]/20 blur-3xl rounded-full" />
+                                    <div className="relative w-24 h-24 bg-gradient-to-br from-[#A1D1E5] to-[#074C6B] rounded-3xl flex items-center justify-center shadow-2xl">
+                                        <Zap className="w-12 h-12 text-white" />
                                     </div>
                                 </div>
 
-                                {/* Timestamp */}
-                                <span className={`text-[11px] text-white/30 mt-2 px-1 font-medium opacity-0 group-hover:opacity-100 transition-opacity`}>
-                                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-3">
+                                    How can I help your <span className="text-gradient bg-gradient-to-r from-[#A1D1E5] to-emerald-400">career</span> today?
+                                </h2>
+                                <p className="text-white/50 text-center max-w-md mb-10">
+                                    I'm AURORA, your AI career coach. Ask me anything about resumes, interviews, job searching, or career planning.
+                                </p>
 
-                                {/* Quick Actions */}
-                                {msg.quickActions && msg.quickActions.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-3 animate-fade-in pl-1">
-                                        {msg.quickActions.map((action) => (
-                                            <button
-                                                key={action.value}
-                                                onClick={() => handleSend(action.label)}
-                                                className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/5 hover:bg-white/20 border border-white/10 text-white/90 transition-all hover:scale-105 active:scale-95 shadow-sm"
-                                            >
-                                                {action.label}
-                                            </button>
-                                        ))}
+                                {/* Suggested Prompts Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+                                    {suggestedPrompts.map((item, index) => (
+                                        <button
+                                            key={item.label}
+                                            onClick={() => handleSend(item.prompt)}
+                                            className="group flex items-center gap-4 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#A1D1E5]/50 rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-lg animate-fade-in-up"
+                                            style={{ animationDelay: `${index * 100}ms` }}
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center group-hover:from-[#A1D1E5] group-hover:to-[#5D93A9] transition-all">
+                                                <item.icon className="w-5 h-5 text-[#A1D1E5] group-hover:text-[#0B2B3D] transition-colors" />
+                                            </div>
+                                            <div>
+                                                <span className="text-white font-semibold block">{item.label}</span>
+                                                <span className="text-white/40 text-sm line-clamp-1">{item.prompt}</span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Upload CTA */}
+                                <div className="mt-8 flex items-center gap-3 text-white/30 text-sm">
+                                    <div className="h-px flex-1 bg-white/10" />
+                                    <span>or upload your resume to get started</span>
+                                    <div className="h-px flex-1 bg-white/10" />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Messages */}
+                        {messages.map((msg, index) => (
+                            <div
+                                key={msg.id || index}
+                                className={`flex gap-4 mb-6 group ${msg.role === "user" ? "flex-row-reverse" : "flex-row"} animate-fade-in-up`}
+                            >
+                                <Avatar className={`w-10 h-10 border-2 shadow-lg mt-1 shrink-0 ${msg.role === 'user' ? 'border-white/20' : 'border-[#A1D1E5]/30'}`}>
+                                    <AvatarImage src={msg.role === 'user' ? undefined : "/aurora-avatar.png"} />
+                                    <AvatarFallback className={msg.role === 'user' ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white' : 'bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] text-[#0B2B3D]'}>
+                                        {msg.role === "user" ? <User className="w-5 h-5" /> : "A"}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                                    <div
+                                        className={`px-5 py-4 rounded-2xl shadow-lg text-[15px] leading-relaxed ${msg.role === "user"
+                                                ? "bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] border border-white/10 text-white rounded-tr-sm"
+                                                : "bg-white/10 border border-white/10 text-slate-100 rounded-tl-sm"
+                                            }`}
+                                    >
+                                        <div className="prose prose-invert max-w-none">
+                                            {formatContent(msg.content)}
+                                        </div>
                                     </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
 
-                    {/* Loading Indicator */}
-                    {isLoading && (
-                        <div className="flex gap-4 animate-pulse">
-                            <div className="w-10 h-10 rounded-full bg-[#0B2B3D] border-2 border-[#A1D1E5]/50 flex items-center justify-center shrink-0">
-                                <span className="text-[#A1D1E5] font-bold text-sm">A</span>
-                            </div>
-                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl rounded-tl-sm px-6 py-4 shadow-sm flex items-center gap-3">
-                                <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
-                                <span className="text-white/70 text-sm font-medium">AURORA is thinking...</span>
-                            </div>
-                        </div>
-                    )}
-                    <div ref={scrollRef} className="h-4" />
-                </div>
-            </ScrollArea>
+                                    <span className="text-[11px] text-white/30 mt-2 px-1 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
 
-            {/* Input Area - Floating Glassmorphism */}
-            <div className="relative mb-6">
-                <div className="relative flex items-end gap-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl ring-1 ring-white/5 transition-all focus-within:ring-white/20 focus-within:bg-white/15">
-                    {/* File Upload */}
+                                    {msg.quickActions && msg.quickActions.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-3">
+                                            {msg.quickActions.map((action) => (
+                                                <button
+                                                    key={action.value}
+                                                    onClick={() => handleSend(action.label)}
+                                                    className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/5 hover:bg-[#A1D1E5]/20 border border-white/10 text-white/90 transition-all hover:scale-105"
+                                                >
+                                                    {action.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Loading */}
+                        {isLoading && (
+                            <div className="flex gap-4 animate-fade-in">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] flex items-center justify-center shrink-0 shadow-lg">
+                                    <span className="text-[#0B2B3D] font-bold text-sm">A</span>
+                                </div>
+                                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm inline-flex items-center gap-3">
+                                    <div className="flex gap-1">
+                                        <span className="w-2 h-2 bg-[#A1D1E5] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <span className="w-2 h-2 bg-[#A1D1E5] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <span className="w-2 h-2 bg-[#A1D1E5] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    </div>
+                                    <span className="text-white/50 text-sm">AURORA is thinking...</span>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={scrollRef} className="h-4" />
+                    </div>
+                </ScrollArea>
+            </div>
+
+            {/* Input Bar */}
+            <div className="mt-4 mb-2">
+                <div className="relative flex items-center gap-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-xl transition-all focus-within:border-[#A1D1E5]/50 focus-within:bg-white/10">
                     <input
                         type="file"
                         accept=".pdf"
@@ -257,47 +315,44 @@ export default function ChatPage() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-12 w-12 rounded-2xl text-white/60 hover:text-white hover:bg-white/10 transition-all"
+                        className="h-11 w-11 rounded-xl text-white/40 hover:text-white hover:bg-white/10"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isLoading || isUploading}
                         title="Upload Resume (PDF)"
                     >
                         {isUploading ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                            <Loader2 className="w-5 h-5 animate-spin text-[#A1D1E5]" />
                         ) : (
                             <Paperclip className="w-5 h-5" />
                         )}
                     </Button>
 
-                    {/* Text Input */}
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                        placeholder={isUploading ? "Reading resume..." : "Ask AURORA anything..."}
-                        className="flex-1 min-h-[50px] border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base md:text-lg placeholder:text-white/30 text-white py-3 font-medium"
+                        placeholder={isUploading ? "Reading your resume..." : "Message AURORA..."}
+                        className="flex-1 h-11 border-0 bg-transparent focus-visible:ring-0 text-base placeholder:text-white/30 text-white"
                         disabled={isLoading || isUploading}
                         autoFocus
                     />
 
-                    {/* Send Button */}
                     <Button
                         size="icon"
                         onClick={() => handleSend()}
                         disabled={!input.trim() || isLoading || isUploading}
-                        className={`h-12 w-12 rounded-2xl shadow-lg transition-all duration-300 ${!input.trim() ? "bg-white/10 text-white/20" : "bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:scale-105 hover:shadow-emerald-500/25"
+                        className={`h-11 w-11 rounded-xl transition-all ${!input.trim()
+                                ? "bg-white/5 text-white/20"
+                                : "bg-gradient-to-r from-[#A1D1E5] to-[#5D93A9] text-[#0B2B3D] hover:opacity-90 shadow-lg"
                             }`}
                     >
-                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-6 h-6" />}
+                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-5 h-5" />}
                     </Button>
                 </div>
 
-                {/* Footer Credit */}
-                <div className="text-center mt-3">
-                    <p className="text-[10px] text-white/20 font-medium uppercase tracking-widest">
-                        Powered by Llama 3 • Secure Resume Analysis
-                    </p>
-                </div>
+                <p className="text-center text-[10px] text-white/20 mt-2 font-medium tracking-wide">
+                    AURORA can make mistakes. Consider checking important information.
+                </p>
             </div>
         </div>
     );
