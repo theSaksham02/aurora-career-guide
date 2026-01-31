@@ -52,26 +52,39 @@ export function AuroraChat() {
 
     try {
       const response = await careerAgent.processMessage(userInput);
-      
+
       // Update messages with actual history from agent
+      // This includes fallback responses if AI API fails
       setMessages(careerAgent.getHistory());
     } catch (error) {
       console.error("AI Error:", error);
-      
-      toast({
-        title: "Connection Error",
-        description: "Please check your AI API configuration",
-        variant: "destructive",
-      });
 
-      // Add error message
-      const errorMessage: AgentMessage = {
-        id: `error-${Date.now()}`,
-        role: 'aurora',
-        content: "I'm having trouble connecting to my AI service. Please make sure your API key is configured in .env.local. Get a free key at openrouter.ai/keys",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      // The agent already handles errors and returns smart fallback responses
+      // So we just update from the agent's history which includes the fallback
+      const history = careerAgent.getHistory();
+      if (history.length > 0) {
+        setMessages(history);
+      } else {
+        // Only show generic error if agent history is empty (shouldn't happen)
+        toast({
+          title: "Connection Error",
+          description: "Please check your AI API configuration",
+          variant: "destructive",
+        });
+
+        const errorMessage: AgentMessage = {
+          id: `error-${Date.now()}`,
+          role: 'aurora',
+          content: "I'm having trouble connecting right now, but I can still help! **What stage are you in?**\n\n🔍 Exploring careers\n📋 Applied to a role\n🎤 Preparing for interviews\n🚀 Starting a new job\n\nTap one of the options below to get stage-specific guidance.",
+          timestamp: new Date(),
+          quickActions: [
+            { label: '🔍 Exploring Careers', value: 'stage_exploring' },
+            { label: '📋 Applied to a Role', value: 'stage_applied' },
+            { label: '🎤 Interview Prep', value: 'stage_interviewing' },
+          ]
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -92,14 +105,14 @@ export function AuroraChat() {
         const stage = stageMap[actionValue];
         if (stage) {
           careerAgent.setStage(stage);
-          
+
           // Add user response
           const stageLabels: Record<string, string> = {
             'stage_student': "I'm a student",
             'stage_jobseeker': "I'm looking for a job",
             'stage_professional': "I'm a working professional"
           };
-          
+
           const response = await careerAgent.processMessage(stageLabels[actionValue]);
           setMessages(careerAgent.getHistory());
         }
@@ -133,28 +146,28 @@ export function AuroraChat() {
     return lines.map((line, i) => {
       // Bold text
       line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      
+
       // Bullet points
       if (line.startsWith('- ') || line.startsWith('• ')) {
         return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: line.substring(2) }} />;
       }
-      
+
       // Numbered lists
       const numberedMatch = line.match(/^(\d+)\.\s(.+)/);
       if (numberedMatch) {
         return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: numberedMatch[2] }} />;
       }
-      
+
       // Headers
       if (line.startsWith('## ')) {
         return <h4 key={i} className="font-semibold mt-2 mb-1">{line.substring(3)}</h4>;
       }
-      
+
       // Regular paragraph
       if (line.trim()) {
         return <p key={i} className="mb-1" dangerouslySetInnerHTML={{ __html: line }} />;
       }
-      
+
       return <br key={i} />;
     });
   };
@@ -209,16 +222,15 @@ export function AuroraChat() {
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] p-4 rounded-2xl text-sm ${
-                      message.role === "user"
+                    className={`max-w-[85%] p-4 rounded-2xl text-sm ${message.role === "user"
                         ? "bg-[#074C6B] text-white rounded-br-md"
                         : "bg-muted text-foreground rounded-bl-md"
-                    }`}
+                      }`}
                   >
                     <div className="space-y-1">
                       {formatContent(message.content)}
                     </div>
-                    
+
                     {/* Quick Actions */}
                     {message.quickActions && message.quickActions.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -237,7 +249,7 @@ export function AuroraChat() {
                   </div>
                 </div>
               ))}
-              
+
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="max-w-[85%] p-4 rounded-2xl rounded-bl-md text-sm bg-muted text-foreground flex items-center gap-2">
@@ -260,9 +272,9 @@ export function AuroraChat() {
                 disabled={isLoading}
                 className="flex-1 rounded-xl border-border/50 focus:border-[#5D93A9]"
               />
-              <Button 
-                size="icon" 
-                onClick={handleSend} 
+              <Button
+                size="icon"
+                onClick={handleSend}
                 disabled={isLoading || !input.trim()}
                 className="rounded-xl bg-[#074C6B] hover:bg-[#0B2B3D] w-10 h-10"
               >
