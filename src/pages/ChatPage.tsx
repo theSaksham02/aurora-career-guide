@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, Bot, User, Paperclip, FileText, Loader2, RefreshCw } from "lucide-react";
+import { Send, Bot, User, Paperclip, Loader2, Sparkles, RefreshCw, ArrowUp } from "lucide-react";
 import { careerAgent, AgentMessage } from "@/lib/career-agent";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Set worker source for PDF.js
+// Set worker source for PDF.js - Ensure version matches installed package
+// Using a specific version to avoid mismatch errors if possible, or dynamic
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 export default function ChatPage() {
@@ -22,14 +23,13 @@ export default function ChatPage() {
     useEffect(() => {
         const history = careerAgent.getHistory();
         if (history.length === 0) {
-            // Trigger initial greeting if empty
             handleSend("Hello!", true);
         } else {
             setMessages(history);
         }
     }, []);
 
-    // Auto-scroll to bottom
+    // Auto-scroll logic
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -40,7 +40,6 @@ export default function ChatPage() {
         if (!content.trim()) return;
 
         if (!hidden) {
-            // Optimistically add user message
             const userMsg: AgentMessage = {
                 id: Date.now().toString(),
                 role: "user",
@@ -54,7 +53,6 @@ export default function ChatPage() {
         setIsLoading(true);
 
         try {
-            // Get agent response
             await careerAgent.processMessage(content);
             const history = careerAgent.getHistory();
             setMessages(history);
@@ -88,18 +86,15 @@ export default function ChatPage() {
                 fullText += pageText + "\n";
             }
 
-            // Add a visual message for the file upload
             const fileMsg: AgentMessage = {
                 id: Date.now().toString(),
                 role: "user",
-                content: `📄 **Attached:** ${file.name}`,
+                content: `📄 **Attached Resume:** ${file.name}`,
                 timestamp: new Date(),
             };
 
-            // Update state directly first so user sees the file
             setMessages(prev => [...prev, fileMsg]);
 
-            // Send the content to the agent with a context wrapper
             const prompt = `I have uploaded my resume/document (${file.name}). Here is the content:\n\n${fullText}\n\nPlease analyze this and tell me my strengths, weaknesses, and how well I match my target role.`;
 
             setIsLoading(true);
@@ -122,104 +117,106 @@ export default function ChatPage() {
         handleSend("Hello!", true);
     };
 
-    // Format message content with markdown-like styling (Matched with AuroraChat.tsx)
     const formatContent = (content: string) => {
-        // Split by lines and process
         const lines = content.split('\n');
         return lines.map((line, i) => {
             // Bold text
             line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-            // Bullet points
-            if (line.startsWith('- ') || line.startsWith('• ')) {
-                return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: line.substring(2) }} />;
-            }
-
-            // Numbered lists
-            const numberedMatch = line.match(/^(\d+)\.\s(.+)/);
-            if (numberedMatch) {
-                return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: numberedMatch[2] }} />;
-            }
-
             // Headers
-            if (line.startsWith('## ')) {
-                return <h4 key={i} className="font-semibold mt-2 mb-1">{line.substring(3)}</h4>;
+            if (line.startsWith('## ')) return <h4 key={i} className="text-lg font-semibold mt-4 mb-2 text-white">{line.substring(3)}</h4>;
+            if (line.startsWith('### ')) return <h5 key={i} className="font-semibold mt-3 mb-1 text-white/90">{line.substring(4)}</h5>;
+            // Lists
+            if (line.startsWith('- ') || line.startsWith('• ')) return <li key={i} className="ml-4 text-white/90" dangerouslySetInnerHTML={{ __html: line.substring(2) }} />;
+            if (line.match(/^(\d+)\.\s/)) {
+                const match = line.match(/^(\d+)\.\s(.+)/);
+                return <li key={i} className="ml-4 list-decimal text-white/90" dangerouslySetInnerHTML={{ __html: match ? match[2] : line }} />;
             }
-
-            // Regular paragraph
-            if (line.trim()) {
-                return <p key={i} className="mb-1" dangerouslySetInnerHTML={{ __html: line }} />;
-            }
-
-            return <br key={i} />;
+            // Paragraphs
+            if (line.trim()) return <p key={i} className="mb-2 leading-relaxed text-white/90" dangerouslySetInnerHTML={{ __html: line }} />;
+            return <div key={i} className="h-2" />;
         });
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] mt-20 container mx-auto max-w-4xl px-4 md:px-0">
-            {/* Header */}
-            <div className="flex items-center justify-between py-4 border-b border-white/10 mb-4">
-                <div className="flex items-center gap-3">
-                    <div className="bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] p-2 rounded-xl">
-                        <Bot className="w-6 h-6 text-[#0B2B3D]" />
+        <div className="flex flex-col h-[calc(100vh-80px)] mt-20 container mx-auto max-w-5xl px-4 md:px-0">
+
+            {/* Glassmorphism Header */}
+            <div className="absolute top-20 left-0 right-0 z-10 px-4 md:px-0 container mx-auto max-w-5xl">
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 flex items-center justify-between shadow-lg">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] w-10 h-10 rounded-xl flex items-center justify-center shadow-inner">
+                            <Sparkles className="w-5 h-5 text-[#0B2B3D]" />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-bold text-white tracking-tight">AURORA AI</h1>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <p className="text-xs text-white/70 font-medium">Online • Powered by Groq Llama 3</p>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-white">AURORA Chat</h1>
-                        <p className="text-sm text-white/60">Your AI Career Assistant</p>
-                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleReset}
+                        className="text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        New Chat
+                    </Button>
                 </div>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleReset}
-                    className="border-white/20 text-white/80 hover:bg-white/10 hover:text-white"
-                >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Reset Chat
-                </Button>
             </div>
 
-            {/* Messages Area */}
-            <ScrollArea className="flex-1 pr-4 rounded-2xl bg-black/20 backdrop-blur-sm border border-white/5 p-4 mb-4">
-                <div className="space-y-6">
+            {/* Messages Scroll Area */}
+            <ScrollArea className="flex-1 rounded-3xl mt-24 mb-6 bg-gradient-to-b from-[#0B2B3D]/50 to-transparent backdrop-blur-sm border border-white/5 shadow-inner">
+                <div className="p-6 space-y-8 min-h-full">
+                    {/* Welcome Message Empty State */}
+                    {messages.length === 0 && !isLoading && (
+                        <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4 opacity-50">
+                            <Bot className="w-16 h-16 text-white/20" />
+                            <p className="text-white/40 text-lg">Start a conversation with AURORA</p>
+                        </div>
+                    )}
+
                     {messages.map((msg, index) => (
                         <div
                             key={msg.id || index}
-                            className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+                            className={`flex gap-4 group ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                         >
-                            <Avatar className={`w-10 h-10 border-2 ${msg.role === 'user' ? 'border-indigo-500/50' : 'border-[#A1D1E5]/50'}`}>
+                            {/* Avatar */}
+                            <Avatar className={`w-10 h-10 border-2 shadow-lg mt-1 shrink-0 ${msg.role === 'user' ? 'border-white/20' : 'border-[#A1D1E5]/50'}`}>
                                 <AvatarImage src={msg.role === 'user' ? undefined : "/aurora-avatar.png"} />
-                                <AvatarFallback className={msg.role === 'user' ? 'bg-indigo-900 text-indigo-100' : 'bg-[#0B2B3D] text-[#A1D1E5]'}>
+                                <AvatarFallback className={msg.role === 'user' ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white' : 'bg-[#0B2B3D] text-[#A1D1E5]'}>
                                     {msg.role === "user" ? <User className="w-5 h-5" /> : "A"}
                                 </AvatarFallback>
                             </Avatar>
 
-                            <div
-                                className={`flex flex-col max-w-[80%] ${msg.role === "user" ? "items-end" : "items-start"
-                                    }`}
-                            >
+                            {/* Message Bubble */}
+                            <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
                                 <div
-                                    className={`px-5 py-3.5 rounded-2xl shadow-sm text-sm md:text-base leading-relaxed ${msg.role === "user"
-                                            ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-tr-sm"
-                                            : "bg-white text-slate-800 rounded-tl-sm shadow-md"
+                                    className={`px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md text-[15px] leading-relaxed transition-all duration-300 ${msg.role === "user"
+                                            ? "bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] border border-white/10 text-white rounded-tr-sm"
+                                            : "bg-white/10 border border-white/10 text-slate-100 rounded-tl-sm hover:bg-white/15"
                                         }`}
                                 >
-                                    <div className="space-y-1">
+                                    <div className="prose prose-invert max-w-none">
                                         {formatContent(msg.content)}
                                     </div>
                                 </div>
-                                <span className="text-xs text-white/40 mt-1.5 px-1">
+
+                                {/* Timestamp */}
+                                <span className={`text-[11px] text-white/30 mt-2 px-1 font-medium opacity-0 group-hover:opacity-100 transition-opacity`}>
                                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
 
                                 {/* Quick Actions */}
-                                {msg.quickActions && (
-                                    <div className="flex flex-wrap gap-2 mt-3 animate-fade-in">
+                                {msg.quickActions && msg.quickActions.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-3 animate-fade-in pl-1">
                                         {msg.quickActions.map((action) => (
                                             <button
                                                 key={action.value}
                                                 onClick={() => handleSend(action.label)}
-                                                className="px-3.5 py-2 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 transition-all hover:scale-105 active:scale-95"
+                                                className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/5 hover:bg-white/20 border border-white/10 text-white/90 transition-all hover:scale-105 active:scale-95 shadow-sm"
                                             >
                                                 {action.label}
                                             </button>
@@ -229,24 +226,27 @@ export default function ChatPage() {
                             </div>
                         </div>
                     ))}
+
+                    {/* Loading Indicator */}
                     {isLoading && (
-                        <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-full bg-[#0B2B3D] border-2 border-[#A1D1E5]/50 flex items-center justify-center">
+                        <div className="flex gap-4 animate-pulse">
+                            <div className="w-10 h-10 rounded-full bg-[#0B2B3D] border-2 border-[#A1D1E5]/50 flex items-center justify-center shrink-0">
                                 <span className="text-[#A1D1E5] font-bold text-sm">A</span>
                             </div>
-                            <div className="bg-white/80 backdrop-blur-sm rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center">
-                                <Loader2 className="w-5 h-5 text-slate-500 animate-spin mr-2" />
-                                <span className="text-slate-600 text-sm font-medium">Thinking...</span>
+                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl rounded-tl-sm px-6 py-4 shadow-sm flex items-center gap-3">
+                                <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
+                                <span className="text-white/70 text-sm font-medium">AURORA is thinking...</span>
                             </div>
                         </div>
                     )}
-                    <div ref={scrollRef} />
+                    <div ref={scrollRef} className="h-4" />
                 </div>
             </ScrollArea>
 
-            {/* Input Area */}
-            <div className="relative mb-2">
-                <div className="relative flex items-end gap-2 bg-white rounded-2xl p-2 shadow-lg ring-1 ring-black/5">
+            {/* Input Area - Floating Glassmorphism */}
+            <div className="relative mb-6">
+                <div className="relative flex items-end gap-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl ring-1 ring-white/5 transition-all focus-within:ring-white/20 focus-within:bg-white/15">
+                    {/* File Upload */}
                     <input
                         type="file"
                         accept=".pdf"
@@ -257,38 +257,46 @@ export default function ChatPage() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-12 w-12 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 mb-[1px]"
+                        className="h-12 w-12 rounded-2xl text-white/60 hover:text-white hover:bg-white/10 transition-all"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isLoading || isUploading}
+                        title="Upload Resume (PDF)"
                     >
                         {isUploading ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
                         ) : (
                             <Paperclip className="w-5 h-5" />
                         )}
                     </Button>
 
+                    {/* Text Input */}
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                        placeholder={isUploading ? "Uploading file..." : "Ask AURORA anything..."}
-                        className="flex-1 min-h-[48px] border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base placeholder:text-slate-400 py-3"
+                        placeholder={isUploading ? "Reading resume..." : "Ask AURORA anything..."}
+                        className="flex-1 min-h-[50px] border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base md:text-lg placeholder:text-white/30 text-white py-3 font-medium"
                         disabled={isLoading || isUploading}
                         autoFocus
                     />
 
+                    {/* Send Button */}
                     <Button
                         size="icon"
                         onClick={() => handleSend()}
                         disabled={!input.trim() || isLoading || isUploading}
-                        className="h-12 w-12 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 mb-[1px]"
+                        className={`h-12 w-12 rounded-2xl shadow-lg transition-all duration-300 ${!input.trim() ? "bg-white/10 text-white/20" : "bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:scale-105 hover:shadow-emerald-500/25"
+                            }`}
                     >
-                        <Send className="w-5 h-5" />
+                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-6 h-6" />}
                     </Button>
                 </div>
-                <div className="text-center mt-2">
-                    <p className="text-xs text-white/30">Powered by AI • Free Resume Analysis included</p>
+
+                {/* Footer Credit */}
+                <div className="text-center mt-3">
+                    <p className="text-[10px] text-white/20 font-medium uppercase tracking-widest">
+                        Powered by Llama 3 • Secure Resume Analysis
+                    </p>
                 </div>
             </div>
         </div>
