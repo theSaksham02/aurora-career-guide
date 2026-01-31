@@ -1,38 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, X, Send, Compass, Briefcase, Rocket, MessageSquare, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Sparkles, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { aiService } from "@/lib/ai-service";
+import { careerAgent, AgentMessage, CareerStage } from "@/lib/career-agent";
 import { useToast } from "@/hooks/use-toast";
-
-interface Message {
-  id: string;
-  role: "user" | "aurora";
-  content: string;
-  isLoading?: boolean;
-}
-
-const quickActions = [
-  { icon: Compass, label: "Career Exploration" },
-  { icon: Briefcase, label: "Application Management" },
-  { icon: Rocket, label: "Onboarding" },
-  { icon: MessageSquare, label: "Ask Freely" },
-];
 
 export function AuroraChat() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "aurora",
-      content: "Hi, I'm AURORA, your AI-powered career guide. What would you like help with today?",
-    },
-  ]);
+  const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Initialize chat with greeting when opened
+  useEffect(() => {
+    if (isOpen && !isInitialized) {
+      const greeting = careerAgent.getGreeting();
+      setMessages([greeting]);
+      setIsInitialized(true);
+    }
+  }, [isOpen, isInitialized]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -47,42 +37,82 @@ export function AuroraChat() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const userInput = input;
     setInput("");
     setIsLoading(true);
 
+    // Optimistically add user message
+    const tempUserMessage: AgentMessage = {
+      id: `temp-${Date.now()}`,
+      role: 'user',
+      content: userInput,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, tempUserMessage]);
+
     try {
-      const response = await aiService.getCareerAdvice(input, {
-        stage: "Student", // You can pass user context here
-      });
-
-      const auroraResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "aurora",
-        content: response,
-      };
-
-      setMessages((prev) => [...prev, auroraResponse]);
+      const response = await careerAgent.processMessage(userInput);
+      
+      // Update messages with actual history from agent
+      setMessages(careerAgent.getHistory());
     } catch (error) {
       console.error("AI Error:", error);
-      
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "aurora",
-        content: "I apologize, but I'm having trouble connecting to my AI service right now. Please make sure your API key is configured correctly in the .env.local file. You can get a free API key from OpenRouter (https://openrouter.ai/keys).",
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
       
       toast({
         title: "Connection Error",
         description: "Please check your AI API configuration",
+        variant: "destructive",
+      });
+
+      // Add error message
+      const errorMessage: AgentMessage = {
+        id: `error-${Date.now()}`,
+        role: 'aurora',
+        content: "I'm having trouble connecting to my AI service. Please make sure your API key is configured in .env.local. Get a free key at openrouter.ai/keys",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickAction = async (actionValue: string) => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    try {
+      // Handle stage selection
+      if (actionValue.startsWith('stage_')) {
+        const stageMap: Record<string, CareerStage> = {
+          'stage_student': 'student',
+          'stage_jobseeker': 'intern_jobseeker',
+          'stage_professional': 'professional'
+        };
+        const stage = stageMap[actionValue];
+        if (stage) {
+          careerAgent.setStage(stage);
+          
+          // Add user response
+          const stageLabels: Record<string, string> = {
+            'stage_student': "I'm a student",
+            'stage_jobseeker': "I'm looking for a job",
+            'stage_professional': "I'm a working professional"
+          };
+          
+          const response = await careerAgent.processMessage(stageLabels[actionValue]);
+          setMessages(careerAgent.getHistory());
+        }
+      } else {
+        // Handle intent selection
+        const response = await careerAgent.handleQuickAction(actionValue);
+        setMessages(careerAgent.getHistory());
+      }
+    } catch (error) {
+      console.error("Quick action error:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -90,48 +120,43 @@ export function AuroraChat() {
     }
   };
 
-  const handleQuickAction = async (label: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: label,
-    };
+  const handleReset = () => {
+    careerAgent.reset();
+    const greeting = careerAgent.getGreeting();
+    setMessages([greeting]);
+  };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      const prompts: Record<string, string> = {
-        "Career Exploration": "I want to explore career options. What are some ways you can help me discover and evaluate different career paths?",
-        "Application Management": "I need help managing my job applications. What strategies and tools can you recommend for tracking applications effectively?",
-        "Onboarding": "I'm starting a new role soon. What should I focus on during my onboarding period to be successful?",
-        "Ask Freely": "What are some of the most common challenges people face in their career journey, and how can I prepare for them?",
-      };
-
-      const response = await aiService.getCareerAdvice(prompts[label] || label, {
-        stage: "Student",
-      });
-
-      const auroraResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "aurora",
-        content: response,
-      };
-
-      setMessages((prev) => [...prev, auroraResponse]);
-    } catch (error) {
-      console.error("AI Error:", error);
+  // Format message content with markdown-like styling
+  const formatContent = (content: string) => {
+    // Split by lines and process
+    const lines = content.split('\n');
+    return lines.map((line, i) => {
+      // Bold text
+      line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "aurora",
-        content: "I'm having trouble connecting right now. Please check your API configuration.",
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+      // Bullet points
+      if (line.startsWith('- ') || line.startsWith('• ')) {
+        return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: line.substring(2) }} />;
+      }
+      
+      // Numbered lists
+      const numberedMatch = line.match(/^(\d+)\.\s(.+)/);
+      if (numberedMatch) {
+        return <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: numberedMatch[2] }} />;
+      }
+      
+      // Headers
+      if (line.startsWith('## ')) {
+        return <h4 key={i} className="font-semibold mt-2 mb-1">{line.substring(3)}</h4>;
+      }
+      
+      // Regular paragraph
+      if (line.trim()) {
+        return <p key={i} className="mb-1" dangerouslySetInnerHTML={{ __html: line }} />;
+      }
+      
+      return <br key={i} />;
+    });
   };
 
   return (
@@ -139,23 +164,44 @@ export function AuroraChat() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-accent text-accent-foreground rounded-full shadow-accent flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] text-white rounded-2xl shadow-2xl flex items-center justify-center hover:scale-110 transition-all duration-300 hover:shadow-[0_10px_40px_rgba(7,76,107,0.4)]"
         aria-label="Toggle AURORA chat"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {isOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <div className="relative">
+            <MessageCircle className="h-7 w-7" />
+            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-[#A1D1E5]" />
+          </div>
+        )}
       </button>
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-background border border-border rounded-lg shadow-lg animate-scale-in overflow-hidden">
+        <div className="fixed bottom-28 right-6 z-50 w-[400px] max-w-[calc(100vw-3rem)] bg-background border border-border rounded-3xl shadow-2xl animate-scale-in overflow-hidden">
           {/* Header */}
-          <div className="bg-primary text-primary-foreground p-4">
-            <h3 className="font-semibold">AURORA</h3>
-            <p className="text-sm opacity-80">Your Career Agent</p>
+          <div className="bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-[#A1D1E5]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">AURORA</h3>
+                <p className="text-xs text-white/70">AI Career Agent</p>
+              </div>
+            </div>
+            <button
+              onClick={handleReset}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              title="Reset conversation"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
           </div>
 
           {/* Messages */}
-          <ScrollArea ref={scrollAreaRef} className="h-[300px] p-4">
+          <ScrollArea ref={scrollAreaRef} className="h-[350px] p-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -163,59 +209,62 @@ export function AuroraChat() {
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                    className={`max-w-[85%] p-4 rounded-2xl text-sm ${
                       message.role === "user"
-                        ? "bg-primary text-primary-foreground animate-slide-in-right"
-                        : "bg-muted text-foreground animate-slide-in-left"
+                        ? "bg-[#074C6B] text-white rounded-br-md"
+                        : "bg-muted text-foreground rounded-bl-md"
                     }`}
                   >
-                    {message.content}
+                    <div className="space-y-1">
+                      {formatContent(message.content)}
+                    </div>
+                    
+                    {/* Quick Actions */}
+                    {message.quickActions && message.quickActions.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {message.quickActions.map((action, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleQuickAction(action.value)}
+                            disabled={isLoading}
+                            className="px-3 py-2 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
+              
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="max-w-[80%] p-3 rounded-lg text-sm bg-muted text-foreground animate-slide-in-left flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>AURORA is thinking...</span>
+                  <div className="max-w-[85%] p-4 rounded-2xl rounded-bl-md text-sm bg-muted text-foreground flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-[#5D93A9]" />
+                    <span className="text-muted-foreground">AURORA is thinking...</span>
                   </div>
                 </div>
               )}
             </div>
           </ScrollArea>
 
-          {/* Quick Actions */}
-          <div className="p-3 border-t border-border">
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              {quickActions.map((action) => (
-                <button
-                  key={action.label}
-                  onClick={() => handleQuickAction(action.label)}
-                  className="flex items-center gap-2 p-2 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors text-left"
-                >
-                  <action.icon className="h-4 w-4 text-secondary" />
-                  <span className="text-foreground">{action.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Input */}
-          <div className="p-3 border-t border-border">
+          <div className="p-4 border-t border-border bg-muted/30">
             <div className="flex gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type a message..."
+                placeholder="Ask AURORA anything..."
                 onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSend()}
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 rounded-xl border-border/50 focus:border-[#5D93A9]"
               />
               <Button 
                 size="icon" 
                 onClick={handleSend} 
-                variant="cta"
                 disabled={isLoading || !input.trim()}
+                className="rounded-xl bg-[#074C6B] hover:bg-[#0B2B3D] w-10 h-10"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -224,6 +273,9 @@ export function AuroraChat() {
                 )}
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Powered by AI • Stage-aware career guidance
+            </p>
           </div>
         </div>
       )}
