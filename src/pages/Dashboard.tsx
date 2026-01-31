@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronRight, Play, Pause,
   CheckCircle2, Target, Sparkles, Loader2,
   GraduationCap, Laptop, FileText, Users, Award, 
-  Timer, MessageSquare, Send, Calendar, BookOpen,
+  Timer, MessageSquare, Send, BookOpen,
   TrendingUp, Briefcase, Clock
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -58,10 +58,9 @@ export default function Dashboard() {
     goals: false,
   });
   const [timerActive, setTimerActive] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState(155); // 2:35
+  const [timerSeconds, setTimerSeconds] = useState(155);
 
   // Calculate stats
-  const pendingApps = mockApplications.filter(a => a.status === 'pending').length;
   const acceptedApps = mockApplications.filter(a => a.status === 'accepted').length;
   const completedTasks = careerTasks.filter(t => t.completed).length;
   const totalTasks = careerTasks.length;
@@ -140,51 +139,52 @@ export default function Dashboard() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  // Glass card styles
-  const glassCard = "bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(11,43,61,0.08)]";
-  const glassCardDark = "bg-gradient-to-br from-[#0B2B3D]/90 to-[#074C6B]/90 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(11,43,61,0.3)]";
+  // Glass card styles - LIGHT BG = DARK TEXT
+  const glassCard = "bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_rgba(11,43,61,0.1)]";
+  // DARK BG = LIGHT TEXT
+  const glassCardDark = "bg-gradient-to-br from-[#0B2B3D] to-[#074C6B] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(11,43,61,0.3)]";
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-6 pb-8">
+    <div className="min-h-screen font-sf">
+      <div className="max-w-[1800px] mx-auto px-6 lg:px-10 pb-10">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div className="mb-10">
+          <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6">
             <div>
-              <p className="text-[#5D93A9] text-sm font-medium mb-1">Welcome back</p>
-              <h1 className="text-3xl lg:text-4xl font-bold text-[#0B2B3D]">
+              <p className="text-[#5D93A9] text-base font-medium mb-2 tracking-wide">Welcome back</p>
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#0B2B3D] tracking-tight">
                 {mockUser.name} 👋
               </h1>
-              <p className="text-[#5D93A9] mt-2">Let's continue building your career path</p>
+              <p className="text-[#5D93A9] text-lg mt-3">Let's continue building your career path</p>
             </div>
             
-            {/* Quick Stats */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className={`${glassCard} px-5 py-3 rounded-2xl flex items-center gap-3`}>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-white" />
+            {/* Quick Stats - LIGHT BG with DARK TEXT */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className={`${glassCard} px-6 py-4 rounded-2xl flex items-center gap-4`}>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[#0B2B3D]">{mockUser.careerReadinessScore}%</p>
-                  <p className="text-xs text-[#5D93A9]">Career Ready</p>
+                  <p className="text-3xl font-bold text-[#0B2B3D]">{mockUser.careerReadinessScore}%</p>
+                  <p className="text-sm text-[#5D93A9] font-medium">Career Ready</p>
                 </div>
               </div>
-              <div className={`${glassCard} px-5 py-3 rounded-2xl flex items-center gap-3`}>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-white" />
+              <div className={`${glassCard} px-6 py-4 rounded-2xl flex items-center gap-4`}>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center">
+                  <Briefcase className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[#0B2B3D]">{mockApplications.length}</p>
-                  <p className="text-xs text-[#5D93A9]">Applications</p>
+                  <p className="text-3xl font-bold text-[#0B2B3D]">{mockApplications.length}</p>
+                  <p className="text-sm text-[#5D93A9] font-medium">Applications</p>
                 </div>
               </div>
-              <div className={`${glassCard} px-5 py-3 rounded-2xl flex items-center gap-3`}>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-white" />
+              <div className={`${glassCard} px-6 py-4 rounded-2xl flex items-center gap-4`}>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                  <Award className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[#0B2B3D]">{acceptedApps}</p>
-                  <p className="text-xs text-[#5D93A9]">Accepted</p>
+                  <p className="text-3xl font-bold text-[#0B2B3D]">{acceptedApps}</p>
+                  <p className="text-sm text-[#5D93A9] font-medium">Accepted</p>
                 </div>
               </div>
             </div>
@@ -192,25 +192,25 @@ export default function Dashboard() {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           
           {/* Left Column - Profile & Navigation */}
-          <div className="lg:col-span-3 space-y-5">
-            {/* Profile Card */}
+          <div className="xl:col-span-3 space-y-6">
+            {/* Profile Card - DARK BG with LIGHT TEXT */}
             <div className={`${glassCardDark} rounded-3xl overflow-hidden`}>
-              <div className="p-6 flex flex-col items-center text-center">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
+              <div className="p-8 flex flex-col items-center text-center">
+                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9] flex items-center justify-center text-white text-3xl font-bold mb-5 shadow-xl">
                   {mockUser.name.split(' ').map(n => n[0]).join('')}
                 </div>
-                <h3 className="font-bold text-white text-lg">{mockUser.name}</h3>
-                <p className="text-[#A1D1E5] text-sm">{mockUser.stage}</p>
+                <h3 className="font-bold text-white text-xl">{mockUser.name}</h3>
+                <p className="text-[#A1D1E5] text-base mt-1">{mockUser.stage}</p>
                 
-                <div className="w-full mt-5 pt-5 border-t border-white/10">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-white/60">Profile Completion</span>
-                    <span className="text-[#A1D1E5] font-semibold">{onboardingPercent}%</span>
+                <div className="w-full mt-6 pt-6 border-t border-white/20">
+                  <div className="flex justify-between text-base mb-3">
+                    <span className="text-white/70">Profile Completion</span>
+                    <span className="text-[#A1D1E5] font-bold">{onboardingPercent}%</span>
                   </div>
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-3 bg-white/10 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-[#A1D1E5] to-[#5D93A9] rounded-full transition-all duration-500"
                       style={{ width: `${onboardingPercent}%` }}
@@ -218,35 +218,35 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                <Link to="/profile" className="w-full mt-4">
-                  <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl">
+                <Link to="/profile" className="w-full mt-5">
+                  <Button className="w-full bg-white/10 hover:bg-white/20 text-white text-base font-semibold border border-white/20 rounded-xl py-3 h-auto">
                     View Profile
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div className={`${glassCard} rounded-3xl p-5`}>
-              <h3 className="font-semibold text-[#0B2B3D] mb-4">Quick Links</h3>
+            {/* Quick Links - LIGHT BG with DARK TEXT */}
+            <div className={`${glassCard} rounded-3xl p-6`}>
+              <h3 className="font-bold text-[#0B2B3D] text-lg mb-5">Quick Links</h3>
               
               {/* Skills */}
               <button 
                 onClick={() => toggleSection('skills')}
-                className="w-full flex items-center justify-between p-3 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
+                className="w-full flex items-center justify-between p-4 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#A1D1E5]/30 to-[#5D93A9]/30 flex items-center justify-center">
-                    <GraduationCap className="w-4 h-4 text-[#074C6B]" />
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#A1D1E5]/40 to-[#5D93A9]/40 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-[#074C6B]" />
                   </div>
-                  <span className="font-medium text-[#0B2B3D]">Skills</span>
+                  <span className="font-semibold text-[#0B2B3D] text-base">Skills</span>
                 </div>
-                {expandedSections.skills ? <ChevronDown className="w-4 h-4 text-[#5D93A9]" /> : <ChevronRight className="w-4 h-4 text-[#5D93A9]" />}
+                {expandedSections.skills ? <ChevronDown className="w-5 h-5 text-[#5D93A9]" /> : <ChevronRight className="w-5 h-5 text-[#5D93A9]" />}
               </button>
               {expandedSections.skills && (
-                <div className="ml-12 mb-2 p-3 bg-[#0B2B3D]/5 rounded-xl">
-                  <p className="text-sm text-[#5D93A9]">Technical Skills: 75%</p>
-                  <div className="h-1.5 bg-[#0B2B3D]/10 rounded-full mt-2 overflow-hidden">
+                <div className="ml-14 mb-3 p-4 bg-[#0B2B3D]/5 rounded-xl">
+                  <p className="text-base text-[#0B2B3D] font-medium">Technical Skills: 75%</p>
+                  <div className="h-2 bg-[#0B2B3D]/10 rounded-full mt-3 overflow-hidden">
                     <div className="h-full w-3/4 bg-gradient-to-r from-[#074C6B] to-[#5D93A9] rounded-full" />
                   </div>
                 </div>
@@ -255,88 +255,88 @@ export default function Dashboard() {
               {/* Resources */}
               <button 
                 onClick={() => toggleSection('resources')}
-                className="w-full flex items-center justify-between p-3 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
+                className="w-full flex items-center justify-between p-4 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#A1D1E5]/30 to-[#5D93A9]/30 flex items-center justify-center">
-                    <Laptop className="w-4 h-4 text-[#074C6B]" />
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#A1D1E5]/40 to-[#5D93A9]/40 flex items-center justify-center">
+                    <Laptop className="w-5 h-5 text-[#074C6B]" />
                   </div>
-                  <span className="font-medium text-[#0B2B3D]">Resources</span>
+                  <span className="font-semibold text-[#0B2B3D] text-base">Resources</span>
                 </div>
-                {expandedSections.resources ? <ChevronDown className="w-4 h-4 text-[#5D93A9]" /> : <ChevronRight className="w-4 h-4 text-[#5D93A9]" />}
+                {expandedSections.resources ? <ChevronDown className="w-5 h-5 text-[#5D93A9]" /> : <ChevronRight className="w-5 h-5 text-[#5D93A9]" />}
               </button>
               {expandedSections.resources && (
-                <Link to="/onboarding" className="block ml-12 mb-2 p-3 bg-[#0B2B3D]/5 rounded-xl hover:bg-[#0B2B3D]/10 transition-colors">
-                  <p className="text-sm font-medium text-[#0B2B3D]">Resume Builder →</p>
+                <Link to="/onboarding" className="block ml-14 mb-3 p-4 bg-[#0B2B3D]/5 rounded-xl hover:bg-[#0B2B3D]/10 transition-colors">
+                  <p className="text-base font-semibold text-[#0B2B3D]">Resume Builder →</p>
                 </Link>
               )}
 
               {/* Goals */}
               <button 
                 onClick={() => toggleSection('goals')}
-                className="w-full flex items-center justify-between p-3 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
+                className="w-full flex items-center justify-between p-4 hover:bg-[#0B2B3D]/5 rounded-xl transition-all duration-300"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#A1D1E5]/30 to-[#5D93A9]/30 flex items-center justify-center">
-                    <Target className="w-4 h-4 text-[#074C6B]" />
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#A1D1E5]/40 to-[#5D93A9]/40 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-[#074C6B]" />
                   </div>
-                  <span className="font-medium text-[#0B2B3D]">Goals</span>
+                  <span className="font-semibold text-[#0B2B3D] text-base">Goals</span>
                 </div>
-                {expandedSections.goals ? <ChevronDown className="w-4 h-4 text-[#5D93A9]" /> : <ChevronRight className="w-4 h-4 text-[#5D93A9]" />}
+                {expandedSections.goals ? <ChevronDown className="w-5 h-5 text-[#5D93A9]" /> : <ChevronRight className="w-5 h-5 text-[#5D93A9]" />}
               </button>
               {expandedSections.goals && (
-                <Link to="/career-exploration" className="block ml-12 mb-2 p-3 bg-[#0B2B3D]/5 rounded-xl hover:bg-[#0B2B3D]/10 transition-colors">
-                  <p className="text-sm font-medium text-[#0B2B3D]">Set Career Goals →</p>
+                <Link to="/career-exploration" className="block ml-14 mb-3 p-4 bg-[#0B2B3D]/5 rounded-xl hover:bg-[#0B2B3D]/10 transition-colors">
+                  <p className="text-base font-semibold text-[#0B2B3D]">Set Career Goals →</p>
                 </Link>
               )}
             </div>
           </div>
 
           {/* Middle Column - Main Content */}
-          <div className="lg:col-span-6 space-y-5">
-            {/* Stats Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="xl:col-span-6 space-y-6">
+            {/* Stats Row - LIGHT BG with DARK TEXT */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Progress Card */}
-              <div className={`${glassCard} rounded-3xl p-6`}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-[#0B2B3D]">Weekly Progress</h3>
-                  <Link to="/applications" className="text-xs text-[#5D93A9] hover:text-[#074C6B] font-medium">
+              <div className={`${glassCard} rounded-3xl p-7`}>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-bold text-[#0B2B3D] text-lg">Weekly Progress</h3>
+                  <Link to="/applications" className="text-sm text-[#074C6B] hover:text-[#0B2B3D] font-semibold">
                     View All →
                   </Link>
                 </div>
-                <div className="flex items-baseline gap-2 mb-5">
-                  <span className="text-4xl font-bold text-[#0B2B3D]">{mockUser.careerReadinessScore}</span>
-                  <span className="text-sm text-[#5D93A9]">% this week</span>
-                  <span className="ml-auto text-xs text-emerald-500 font-medium bg-emerald-50 px-2 py-1 rounded-full">+12%</span>
+                <div className="flex items-baseline gap-3 mb-6">
+                  <span className="text-5xl font-bold text-[#0B2B3D]">{mockUser.careerReadinessScore}</span>
+                  <span className="text-base text-[#5D93A9] font-medium">% this week</span>
+                  <span className="ml-auto text-sm text-emerald-600 font-bold bg-emerald-100 px-3 py-1.5 rounded-full">+12%</span>
                 </div>
                 {/* Bar Chart */}
-                <div className="flex items-end justify-between h-20 gap-2">
+                <div className="flex items-end justify-between h-24 gap-3">
                   {progressData.map((item, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                    <div key={i} className="flex-1 flex flex-col items-center gap-3">
                       <div 
                         className={`w-full rounded-lg transition-all duration-500 ${
                           i === 3 
                             ? 'bg-gradient-to-t from-[#0B2B3D] to-[#074C6B]' 
-                            : 'bg-gradient-to-t from-[#A1D1E5]/60 to-[#A1D1E5]'
+                            : 'bg-gradient-to-t from-[#A1D1E5]/70 to-[#A1D1E5]'
                         }`}
                         style={{ height: `${item.value}%` }}
                       />
-                      <span className="text-xs text-[#5D93A9]">{item.day}</span>
+                      <span className="text-sm font-medium text-[#5D93A9]">{item.day}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Focus Time Card */}
-              <div className={`${glassCard} rounded-3xl p-6`}>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-[#0B2B3D]">Focus Timer</h3>
-                  <Clock className="w-4 h-4 text-[#5D93A9]" />
+              {/* Focus Time Card - LIGHT BG with DARK TEXT */}
+              <div className={`${glassCard} rounded-3xl p-7`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-[#0B2B3D] text-lg">Focus Timer</h3>
+                  <Clock className="w-5 h-5 text-[#5D93A9]" />
                 </div>
                 {/* Circular Progress */}
-                <div className="relative w-32 h-32 mx-auto my-3">
+                <div className="relative w-36 h-36 mx-auto my-4">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-                    <circle cx="64" cy="64" r="54" stroke="rgba(161,209,229,0.3)" strokeWidth="10" fill="none" />
+                    <circle cx="64" cy="64" r="54" stroke="rgba(161,209,229,0.4)" strokeWidth="10" fill="none" />
                     <circle 
                       cx="64" cy="64" r="54" 
                       stroke="url(#timerGradient)" strokeWidth="10" fill="none"
@@ -352,15 +352,15 @@ export default function Dashboard() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-[#0B2B3D]">{formatTime(timerSeconds)}</span>
-                    <span className="text-xs text-[#5D93A9]">{timerActive ? 'Focus Mode' : 'Paused'}</span>
+                    <span className="text-4xl font-bold text-[#0B2B3D]">{formatTime(timerSeconds)}</span>
+                    <span className="text-sm font-medium text-[#5D93A9]">{timerActive ? 'Focus Mode' : 'Paused'}</span>
                   </div>
                 </div>
                 {/* Controls */}
-                <div className="flex items-center justify-center gap-3 mt-2">
+                <div className="flex items-center justify-center gap-4 mt-4">
                   <button 
                     onClick={() => setTimerActive(true)}
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
                       timerActive 
                         ? 'bg-[#0B2B3D]/10 text-[#5D93A9]' 
                         : 'bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] text-white shadow-lg hover:scale-105'
@@ -370,7 +370,7 @@ export default function Dashboard() {
                   </button>
                   <button 
                     onClick={() => setTimerActive(false)}
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
                       !timerActive 
                         ? 'bg-[#0B2B3D]/10 text-[#5D93A9]' 
                         : 'bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] text-white shadow-lg hover:scale-105'
@@ -380,7 +380,7 @@ export default function Dashboard() {
                   </button>
                   <button 
                     onClick={() => setTimerSeconds(1500)}
-                    className="w-11 h-11 rounded-xl bg-[#A1D1E5]/30 flex items-center justify-center hover:bg-[#A1D1E5]/50 transition-all duration-300"
+                    className="w-12 h-12 rounded-xl bg-[#A1D1E5]/40 flex items-center justify-center hover:bg-[#A1D1E5]/60 transition-all duration-300"
                   >
                     <Timer className="w-5 h-5 text-[#074C6B]" />
                   </button>
@@ -388,20 +388,20 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Calendar Card */}
-            <div className={`${glassCard} rounded-3xl p-6`}>
-              <div className="flex items-center gap-3 mb-5">
-                <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white text-sm font-medium shadow-lg">
+            {/* Calendar Card - LIGHT BG with DARK TEXT */}
+            <div className={`${glassCard} rounded-3xl p-7`}>
+              <div className="flex items-center gap-4 mb-6">
+                <button className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white text-base font-semibold shadow-lg">
                   This Week
                 </button>
-                <span className="text-[#0B2B3D] font-semibold">January 2026</span>
-                <button className="px-4 py-2 rounded-xl bg-[#0B2B3D]/5 text-[#5D93A9] text-sm font-medium hover:bg-[#0B2B3D]/10 transition-colors">
+                <span className="text-[#0B2B3D] text-lg font-bold">January 2026</span>
+                <button className="px-5 py-2.5 rounded-xl bg-[#0B2B3D]/5 text-[#5D93A9] text-base font-semibold hover:bg-[#0B2B3D]/10 transition-colors">
                   Next Week
                 </button>
               </div>
               
               {/* Week Days */}
-              <div className="grid grid-cols-5 gap-3 mb-5">
+              <div className="grid grid-cols-5 gap-4 mb-6">
                 {[
                   { day: 'Mon', date: 27 },
                   { day: 'Tue', date: 28 },
@@ -410,8 +410,8 @@ export default function Dashboard() {
                   { day: 'Fri', date: 31, active: true },
                 ].map((item) => (
                   <div key={item.day} className="text-center">
-                    <p className="text-xs text-[#5D93A9] mb-2">{item.day}</p>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto font-semibold transition-all duration-300 ${
+                    <p className="text-sm font-medium text-[#5D93A9] mb-3">{item.day}</p>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto text-lg font-bold transition-all duration-300 ${
                       item.active 
                         ? 'bg-gradient-to-br from-[#0B2B3D] to-[#074C6B] text-white shadow-lg' 
                         : 'text-[#0B2B3D] hover:bg-[#0B2B3D]/5'
@@ -423,19 +423,19 @@ export default function Dashboard() {
               </div>
 
               {/* Events */}
-              <div className="space-y-3">
-                <div className="flex items-start gap-4">
-                  <span className="text-xs text-[#5D93A9] w-16 pt-3 font-medium">9:00 AM</span>
-                  <div className="flex-1 p-4 rounded-2xl bg-gradient-to-r from-[#A1D1E5]/40 to-[#A1D1E5]/20 border border-[#A1D1E5]/30">
-                    <p className="font-semibold text-[#0B2B3D]">Resume Review Session</p>
-                    <p className="text-sm text-[#5D93A9]">With Career Advisor • 45 min</p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-5">
+                  <span className="text-sm font-semibold text-[#5D93A9] w-20 pt-4">9:00 AM</span>
+                  <div className="flex-1 p-5 rounded-2xl bg-gradient-to-r from-[#A1D1E5]/50 to-[#A1D1E5]/30 border border-[#A1D1E5]/40">
+                    <p className="font-bold text-[#0B2B3D] text-lg">Resume Review Session</p>
+                    <p className="text-base text-[#074C6B] mt-1">With Career Advisor • 45 min</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <span className="text-xs text-[#5D93A9] w-16 pt-3 font-medium">2:00 PM</span>
-                  <div className="flex-1 p-4 rounded-2xl bg-gradient-to-r from-[#074C6B]/10 to-[#074C6B]/5 border border-[#074C6B]/10">
-                    <p className="font-semibold text-[#0B2B3D]">Mock Interview</p>
-                    <p className="text-sm text-[#5D93A9]">Technical Practice • 1 hour</p>
+                <div className="flex items-start gap-5">
+                  <span className="text-sm font-semibold text-[#5D93A9] w-20 pt-4">2:00 PM</span>
+                  <div className="flex-1 p-5 rounded-2xl bg-gradient-to-r from-[#074C6B]/15 to-[#074C6B]/5 border border-[#074C6B]/15">
+                    <p className="font-bold text-[#0B2B3D] text-lg">Mock Interview</p>
+                    <p className="text-base text-[#074C6B] mt-1">Technical Practice • 1 hour</p>
                   </div>
                 </div>
               </div>
@@ -443,74 +443,74 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column - Tasks & AI */}
-          <div className="lg:col-span-3 space-y-5">
-            {/* Tasks Card */}
-            <div className={`${glassCardDark} rounded-3xl p-5 text-white`}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Career Tasks</h3>
+          <div className="xl:col-span-3 space-y-6">
+            {/* Tasks Card - DARK BG with LIGHT TEXT */}
+            <div className={`${glassCardDark} rounded-3xl p-6`}>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-bold text-white text-lg">Career Tasks</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold">{completedTasks}</span>
-                  <span className="text-white/60">/ {totalTasks}</span>
+                  <span className="text-3xl font-bold text-white">{completedTasks}</span>
+                  <span className="text-white/60 text-lg">/ {totalTasks}</span>
                 </div>
               </div>
               
-              <ScrollArea className="h-[260px]">
-                <div className="space-y-2 pr-2">
+              <ScrollArea className="h-[280px]">
+                <div className="space-y-3 pr-2">
                   {careerTasks.map((task) => (
                     <div 
                       key={task.id} 
-                      className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
+                      className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
                         task.completed 
-                          ? 'bg-white/10' 
+                          ? 'bg-white/15' 
                           : 'bg-white/5 hover:bg-white/10'
                       }`}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         task.completed 
                           ? 'bg-gradient-to-br from-[#A1D1E5] to-[#5D93A9]' 
                           : 'bg-white/10'
                       }`}>
-                        <task.icon className={`w-4 h-4 ${task.completed ? 'text-[#0B2B3D]' : 'text-white/70'}`} />
+                        <task.icon className={`w-5 h-5 ${task.completed ? 'text-[#0B2B3D]' : 'text-white/80'}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${task.completed ? 'line-through opacity-60' : ''}`}>
+                        <p className={`text-base font-medium truncate text-white ${task.completed ? 'line-through opacity-60' : ''}`}>
                           {task.title}
                         </p>
-                        <p className="text-xs text-white/50">{task.date}</p>
+                        <p className="text-sm text-white/50">{task.date}</p>
                       </div>
                       {task.completed && (
-                        <CheckCircle2 className="w-5 h-5 text-[#A1D1E5] flex-shrink-0" />
+                        <CheckCircle2 className="w-6 h-6 text-[#A1D1E5] flex-shrink-0" />
                       )}
                     </div>
                   ))}
                 </div>
               </ScrollArea>
               
-              <Link to="/onboarding" className="block mt-4">
-                <Button className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl">
+              <Link to="/onboarding" className="block mt-5">
+                <Button className="w-full bg-white/10 hover:bg-white/20 text-white text-base font-semibold border border-white/20 rounded-xl py-3 h-auto">
                   View All Tasks
                 </Button>
               </Link>
             </div>
 
-            {/* AI Chat Card */}
-            <div className={`${glassCard} rounded-3xl p-5 border-2 border-[#A1D1E5]/30`}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-5 h-5 text-[#A1D1E5]" />
+            {/* AI Chat Card - LIGHT BG with DARK TEXT */}
+            <div className={`${glassCard} rounded-3xl p-6 border-2 border-[#A1D1E5]/40`}>
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-[#A1D1E5]" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#0B2B3D]">AURORA AI</h3>
-                  <p className="text-xs text-[#5D93A9]">Your Career Assistant</p>
+                  <h3 className="font-bold text-[#0B2B3D] text-lg">AURORA AI</h3>
+                  <p className="text-sm text-[#5D93A9] font-medium">Your Career Assistant</p>
                 </div>
               </div>
               
-              <ScrollArea className="h-28 mb-4 px-1">
-                <div className="space-y-2">
+              <ScrollArea className="h-32 mb-5 px-1">
+                <div className="space-y-3">
                   {messages.slice(-3).map((msg) => (
                     <div 
                       key={msg.id} 
-                      className={`text-sm p-3 rounded-xl ${
+                      className={`text-base p-4 rounded-xl ${
                         msg.role === 'user' 
                           ? 'bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white ml-4' 
                           : 'bg-[#0B2B3D]/5 text-[#0B2B3D]'
@@ -520,8 +520,8 @@ export default function Dashboard() {
                     </div>
                   ))}
                   {isLoading && (
-                    <div className="flex items-center gap-2 text-sm text-[#5D93A9] p-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                    <div className="flex items-center gap-3 text-base text-[#5D93A9] p-3">
+                      <Loader2 className="w-5 h-5 animate-spin" />
                       Thinking...
                     </div>
                   )}
@@ -529,32 +529,32 @@ export default function Dashboard() {
                 </div>
               </ScrollArea>
               
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Ask AURORA..."
-                  className="flex-1 bg-[#0B2B3D]/5 border-[#0B2B3D]/10 rounded-xl h-10 text-sm placeholder:text-[#5D93A9]/60"
+                  className="flex-1 bg-[#0B2B3D]/5 border-[#0B2B3D]/10 rounded-xl h-12 text-base placeholder:text-[#5D93A9]/60"
                   disabled={isLoading}
                 />
                 <Button 
                   onClick={handleSend} 
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] hover:opacity-90 text-white h-10 w-10 p-0 rounded-xl"
+                  className="bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] hover:opacity-90 text-white h-12 w-12 p-0 rounded-xl"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5" />
                 </Button>
               </div>
               
               {/* Quick Actions */}
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-4">
                 {['Resume Tips', 'Interview Prep', 'Career Paths'].map((action) => (
                   <button
                     key={action}
                     onClick={() => handleQuickAction(action.toLowerCase())}
                     disabled={isLoading}
-                    className="px-3 py-1.5 rounded-xl bg-[#0B2B3D]/5 text-xs text-[#074C6B] font-medium hover:bg-[#0B2B3D]/10 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 rounded-xl bg-[#0B2B3D]/5 text-sm text-[#074C6B] font-semibold hover:bg-[#0B2B3D]/10 transition-colors disabled:opacity-50"
                   >
                     {action}
                   </button>
