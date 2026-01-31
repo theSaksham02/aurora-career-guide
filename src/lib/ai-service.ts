@@ -9,12 +9,13 @@ export interface AIServiceOptions {
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
+  timeout?: number; // Timeout in milliseconds
 }
 
 class AIService {
   private getApiKey(): string {
     const { provider, openrouterApiKey, groqApiKey, openaiApiKey } = AI_CONFIG;
-    
+
     switch (provider) {
       case 'openrouter':
         return openrouterApiKey || '';
@@ -39,7 +40,7 @@ class AIService {
 
     if (AI_CONFIG.provider === 'openrouter') {
       headers['Authorization'] = `Bearer ${apiKey}`;
-      headers['HTTP-Referer'] = window.location.origin;
+      headers['HTTP-Referer'] = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081';
       headers['X-Title'] = 'Aurora Career Guide';
     } else {
       headers['Authorization'] = `Bearer ${apiKey}`;
@@ -48,42 +49,99 @@ class AIService {
     return headers;
   }
 
+  /**
+   * Fetch with timeout
+   */
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+    timeout: number = 30000
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      return response;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
   async chat(
     messages: ChatMessage[],
     options: AIServiceOptions = {}
   ): Promise<string> {
     const apiKey = this.getApiKey();
-    
+
     if (!apiKey) {
-      throw new Error(`API key not configured for provider: ${AI_CONFIG.provider}`);
+      console.error('No API key found. Provider:', AI_CONFIG.provider);
+      throw new Error(`API key not configured. Please add your API key to .env.local`);
     }
 
     const endpoint = this.getEndpoint();
-    const { temperature = 0.7, maxTokens = 1000 } = options;
+    const { temperature = 0.7, maxTokens = 1000, timeout = 30000 } = options;
+
+    console.log('AI Service: Starting request to', endpoint);
+    console.log('AI Service: Using model', AI_CONFIG.model);
 
     try {
-      const response = await fetch(`${endpoint}/chat/completions`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify({
-          model: AI_CONFIG.model,
-          messages,
-          temperature,
-          max_tokens: maxTokens,
-          stream: false,
-        }),
-      });
+      const response = await this.fetchWithTimeout(
+        `${endpoint}/chat/completions`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            model: AI_CONFIG.model,
+            messages,
+            temperature,
+            max_tokens: maxTokens,
+            stream: false,
+          }),
+        },
+        timeout
+      );
+
+      console.log('AI Service: Response status', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('AI Service: Error response', errorData);
+
+        if (response.status === 401) {
+          throw new Error('Invalid API key. Please check your .env.local file.');
+        }
+        if (response.status === 429) {
+          throw new Error('Rate limited. Please wait a moment and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('AI service is temporarily unavailable. Please try again.');
+        }
+
         throw new Error(
           `AI API Error: ${response.status} - ${errorData.error?.message || response.statusText}`
         );
       }
 
       const data = await response.json();
-      return data.choices[0]?.message?.content || 'No response generated';
-    } catch (error) {
+      console.log('AI Service: Response received successfully');
+
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        console.warn('AI Service: No content in response', data);
+        return 'I apologize, but I could not generate a response. Please try again.';
+      }
+
+      return content;
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.error('AI Service: Request timed out after', timeout, 'ms');
+        throw new Error('Request timed out. The AI service is taking too long to respond.');
+      }
+
       console.error('AI Service Error:', error);
       throw error;
     }
@@ -94,7 +152,7 @@ class AIService {
     options: AIServiceOptions = {}
   ): AsyncGenerator<string, void, unknown> {
     const apiKey = this.getApiKey();
-    
+
     if (!apiKey) {
       throw new Error(`API key not configured for provider: ${AI_CONFIG.provider}`);
     }
@@ -196,6 +254,21 @@ Provide helpful, actionable advice in a friendly and professional tone. Keep res
       temperature: 0.7,
       maxTokens: 500,
     });
+  }
+
+  /**
+   * Test the API connection
+   */
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await this.chat(
+        [{ role: 'user', content: 'Say "Hello, I am working!" in exactly those words.' }],
+        { maxTokens: 50, timeout: 10000 }
+      );
+      return { success: true, message: response };
+    } catch (error: any) {
+      return { success: false, message: error.message };
+    }
   }
 }
 
