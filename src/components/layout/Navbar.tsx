@@ -23,7 +23,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className={`text-xl font-bold ${isLandingPage ? "text-primary-foreground" : "text-primary"}`}>
+            <div className={`text-xl font-bold ${isLandingPage ? "text-white drop-shadow-lg" : "text-foreground"}`}>
               AURORA
             </div>
           </Link>
@@ -36,8 +36,8 @@ export function Navbar() {
                 to={link.href}
                 className={`text-sm font-medium transition-colors hover:opacity-80 ${
                   location.pathname === link.href
-                    ? isLandingPage ? "text-primary-foreground" : "text-primary"
-                    : isLandingPage ? "text-primary-foreground/80" : "text-muted-foreground"
+                    ? isLandingPage ? "text-white drop-shadow-md" : "text-foreground font-semibold"
+                    : isLandingPage ? "text-white/80 drop-shadow-sm" : "text-muted-foreground"
                 }`}
               >
                 {link.label}
@@ -67,9 +67,9 @@ export function Navbar() {
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X className={`h-6 w-6 ${isLandingPage ? "text-primary-foreground" : "text-foreground"}`} />
+              <X className={`h-6 w-6 ${isLandingPage ? "text-white drop-shadow-md" : "text-foreground"}`} />
             ) : (
-              <Menu className={`h-6 w-6 ${isLandingPage ? "text-primary-foreground" : "text-foreground"}`} />
+              <Menu className={`h-6 w-6 ${isLandingPage ? "text-white drop-shadow-md" : "text-foreground"}`} />
             )}
           </button>
         </div>
