@@ -314,7 +314,10 @@ I'm here to help you navigate your career journey — whether you're exploring r
       return response;
     } catch (error) {
       console.error('AI Error:', error);
-      return this.getFallbackResponse();
+      // CRITICAL: Push fallback to history so UI displays it
+      const fallback = this.getFallbackResponse();
+      this.conversationHistory.push(fallback);
+      return fallback;
     }
   }
 
@@ -354,9 +357,11 @@ I'm here to help you navigate your career journey — whether you're exploring r
           timestamp: new Date(),
         };
         this.conversationHistory.push(userMessage);
+        this.state.questionsAsked++;
 
-        // Generate stage-specific response
-        return this.generateStageResponse(stage);
+        // Generate stage-specific response (no API call needed - instant response)
+        const response = await this.generateStageResponse(stage);
+        return response;
       }
     }
 
@@ -518,7 +523,14 @@ What aspect of career growth are you focused on?`,
    * Generate AI response using the LLM
    */
   private async generateAIResponse(userInput: string): Promise<AgentMessage> {
-    // Build context
+    // Check if AI provider is set to 'none' - use built-in responses
+    const provider = import.meta.env.VITE_AI_PROVIDER;
+    if (provider === 'none' || !provider) {
+      // Use built-in intelligent responses - no external API needed
+      return this.generateBuiltInResponse(userInput);
+    }
+
+    // Build context for external AI
     const stageContext = STAGE_CONTEXT[this.state.stage];
     const roleContext = ROLE_CONTEXT[this.state.role];
 
@@ -622,6 +634,270 @@ ${this.state.questionsAsked >= 3 && this.state.stage === 'unknown' ? 'IMPORTANT:
     }
 
     return [];
+  }
+
+  /**
+   * Generate intelligent built-in response based on user input and context
+   * This works WITHOUT any external API - all responses are pre-built
+   */
+  private generateBuiltInResponse(userInput: string): AgentMessage {
+    const lower = userInput.toLowerCase();
+    let content = '';
+    let quickActions: QuickAction[] = [];
+
+    // Interview-related queries
+    if (lower.includes('interview') || lower.includes('prepare') || lower.includes('questions')) {
+      this.state.stage = 'interviewing';
+      content = `Great question! Let me help you prepare for your interview. 🎯
+
+**Interview Preparation Framework:**
+
+**1. Before the Interview**
+- Research the company thoroughly (mission, values, recent news)
+- Review the job description and match your experience to requirements
+- Prepare 5+ STAR stories (Situation, Task, Action, Result)
+- Test your tech setup if it's a virtual interview
+
+**2. Common Questions to Master**
+- "Tell me about yourself" — Keep it 2-3 minutes, focus on relevant experience
+- "Why this company/role?" — Show you've done research
+- "Tell me about a challenging project" — Use the STAR method
+- "Where do you see yourself in 5 years?" — Show ambition aligned with company
+
+**3. Day of the Interview**
+- Arrive/log in 10 minutes early
+- Have questions ready for them
+- Take notes if appropriate
+- Send a thank-you email within 24 hours
+
+**Your Interview Readiness: 6/10** (general estimate)
+
+Would you like me to help you with specific interview questions, or do a practice session?`;
+      quickActions = [
+        { label: '💻 Technical Interview Tips', value: 'technical_interview' },
+        { label: '🧠 Behavioral Questions', value: 'behavioral_questions' },
+        { label: '❓ Questions to Ask Them', value: 'questions_to_ask' },
+      ];
+    }
+    // Exploring careers
+    else if (lower.includes('explor') || lower.includes('career') || lower.includes('role') || lower.includes('job')) {
+      this.state.stage = 'exploring';
+      content = `I'd love to help you explore your career options! 🌟
+
+**Here's my recommended approach:**
+
+**1. Self-Assessment First**
+- What are your top 5 skills?
+- What problems do you enjoy solving?
+- What's your preferred work environment?
+
+**2. Research Roles That Interest You**
+- Software Engineering → Building apps, systems, solving technical problems
+- Data Science → Analyzing data, building ML models, finding insights
+- Product Management → Defining what to build, working with teams
+- Design → Creating user experiences, visual design
+- Operations → Running processes, improving efficiency
+
+**3. Building Skills**
+- Take online courses (Coursera, Udemy, LinkedIn Learning)
+- Work on personal projects to build a portfolio
+- Network with people in roles you're interested in
+
+What type of role interests you most? I can give you specific guidance!`;
+      quickActions = [
+        { label: '💻 Software / Engineering', value: 'role_software' },
+        { label: '📊 Data / Analytics', value: 'role_data' },
+        { label: '🎯 Product Management', value: 'role_product' },
+        { label: '🎨 Design', value: 'role_design' },
+      ];
+    }
+    // Applied / waiting
+    else if (lower.includes('applied') || lower.includes('application') || lower.includes('waiting') || lower.includes('hear back')) {
+      this.state.stage = 'applied';
+      content = `You've applied — that's great! Here's what to do while waiting: 💪
+
+**1. Track Your Applications**
+- Use a spreadsheet or tool like Notion
+- Note: company, role, date applied, status
+
+**2. Prepare for Next Steps**
+- Research the company deeply
+- Prepare your "tell me about yourself" story
+- Have 3-5 questions ready for them
+
+**3. Keep Applying**
+- Don't put all eggs in one basket
+- Aim for 5-10 quality applications per week
+
+**Typical Timeline:**
+- Initial response: 1-2 weeks
+- Phone screen: within 3 weeks
+- Full interview process: 2-6 weeks
+
+**Should you follow up?** If no response after 2 weeks, a polite follow-up email is appropriate.`;
+      quickActions = [
+        { label: '📧 Write Follow-up Email', value: 'followup_email' },
+        { label: '🎤 Prepare for Interview', value: 'stage_interviewing' },
+      ];
+    }
+    // New job / onboarding
+    else if (lower.includes('new job') || lower.includes('started') || lower.includes('first') || lower.includes('onboard')) {
+      this.state.stage = 'new_hire';
+      content = `Welcome to your new role! 🚀 Here's your success framework:
+
+**First Week**
+- Focus on learning, not impressing
+- Meet your team members 1-on-1
+- Understand the tools and processes
+- Ask questions freely — there are no stupid questions!
+
+**First 30 Days**
+- Understand team goals and how you contribute
+- Complete any onboarding training
+- Find a "buddy" or mentor
+- Start on small, meaningful tasks
+
+**First 90 Days**
+- Aim for your first small win
+- Build relationships across teams
+- Seek feedback proactively
+- Document what you learn
+
+**Key tip:** The best new hires listen before they suggest changes. Learn the "why" behind current processes first.`;
+      quickActions = [
+        { label: '👥 Understanding My Team', value: 'team_structure' },
+        { label: '🎯 First Week Checklist', value: 'first_week' },
+      ];
+    }
+    // Promotion / growth
+    else if (lower.includes('promot') || lower.includes('grow') || lower.includes('advance') || lower.includes('next level')) {
+      this.state.stage = 'professional';
+      content = `Ready to level up your career! 📈 Here's your growth framework:
+
+**1. Understand the Path**
+- Ask your manager about promotion criteria
+- Look at job descriptions for the next level
+- Identify skill gaps honestly
+
+**2. Visibility Matters**
+- Document your wins and impact
+- Share learnings with the team
+- Take on cross-functional projects
+
+**3. Build Your Network**
+- Find mentors in roles you want
+- Help others (it comes back)
+- Stay current in your field
+
+**4. Have the Conversation**
+- Schedule a career discussion with your manager
+- Ask: "What does success at the next level look like?"
+- Create a development plan together
+
+**Next step:** Schedule that career conversation this week!`;
+      quickActions = [
+        { label: '🔄 Explore Other Roles', value: 'internal_mobility' },
+        { label: '🧭 Build Career Roadmap', value: 'career_roadmap' },
+      ];
+    }
+    // CV / resume related
+    else if (lower.includes('cv') || lower.includes('resume') || lower.includes('compatibility') || lower.includes('score')) {
+      content = `I can help you with your CV/resume! 📄
+
+**CV Best Practices:**
+
+**1. Format**
+- Keep it to 1-2 pages max
+- Use a clean, readable format
+- Include relevant keywords from job descriptions
+
+**2. Key Sections**
+- **Summary**: 2-3 sentences about who you are
+- **Experience**: Focus on achievements, not duties (use numbers!)
+- **Skills**: Technical skills, tools, languages
+- **Education**: Degrees, certifications, relevant coursework
+
+**3. Tailor for Each Role**
+- Match your experience to the job requirements
+- Use similar language to the job description
+- Highlight the most relevant achievements
+
+**CV Compatibility Tips:**
+- Read the job description carefully
+- Identify 5-7 key requirements
+- Ensure your CV addresses each one specifically
+
+Would you like tips for a specific role or industry?`;
+      quickActions = [
+        { label: '💻 Tech CV Tips', value: 'tech_cv' },
+        { label: '📊 Data Role CV', value: 'data_cv' },
+      ];
+    }
+    // Skills / learning
+    else if (lower.includes('skill') || lower.includes('learn') || lower.includes('course') || lower.includes('certif')) {
+      content = `Let's build your skills! 📚
+
+**Free Learning Resources:**
+- **Coursera** — University courses (audit for free)
+- **freeCodeCamp** — Full-stack development
+- **Khan Academy** — Computer science fundamentals
+- **YouTube** — Tutorials for almost anything
+
+**Paid Platforms Worth It:**
+- **Udemy** — Wait for sales ($10-15 courses)
+- **LinkedIn Learning** — Often free through employers
+- **Pluralsight** — Great for tech skills
+
+**High-Value Certifications:**
+- **AWS/GCP/Azure** — Cloud computing
+- **Google Analytics** — Marketing/Data
+- **PMP/Scrum** — Project management
+- **Salesforce** — CRM/Sales
+
+**My Recommendation:**
+1. Pick ONE area to focus on
+2. Dedicate 1-2 hours daily
+3. Build projects as you learn
+4. Share your work publicly
+
+What specific skills are you looking to build?`;
+      quickActions = [
+        { label: '💻 Coding Skills', value: 'coding_skills' },
+        { label: '📊 Data Skills', value: 'data_skills' },
+      ];
+    }
+    // Default / greeting
+    else {
+      content = `Hi! I'm AURORA, your AI career guide. 👋
+
+I can help you with:
+
+🔍 **Career Exploration** — Discover roles that match your skills
+📋 **Job Applications** — Tips for resume, cover letter, applications
+🎤 **Interview Prep** — Practice questions, preparation strategies  
+🚀 **New Job Success** — Onboarding, first 90 days guidance
+📈 **Career Growth** — Promotions, skill development, next steps
+
+What would you like help with today?`;
+      quickActions = [
+        { label: '🔍 Exploring Careers', value: 'stage_exploring' },
+        { label: '🎤 Preparing for Interview', value: 'stage_interviewing' },
+        { label: '📋 Applied to a Role', value: 'stage_applied' },
+        { label: '🚀 Starting New Job', value: 'stage_new_hire' },
+      ];
+    }
+
+    return {
+      id: this.generateId(),
+      role: 'aurora',
+      content,
+      timestamp: new Date(),
+      quickActions: quickActions.length > 0 ? quickActions : undefined,
+      metadata: {
+        stage: this.state.stage,
+        role: this.state.role,
+      },
+    };
   }
 
   /**
