@@ -138,7 +138,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] mt-20 container mx-auto max-w-5xl px-4 md:px-0">
+        <div className="flex flex-col h-[calc(100vh-120px)] mt-32 container mx-auto max-w-5xl px-4 md:px-0">
 
             {/* Glassmorphism Header */}
             <div className="absolute top-20 left-0 right-0 z-10 px-4 md:px-0 container mx-auto max-w-5xl">
@@ -195,8 +195,8 @@ export default function ChatPage() {
                             <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
                                 <div
                                     className={`px-6 py-4 rounded-2xl shadow-xl backdrop-blur-md text-[15px] leading-relaxed transition-all duration-300 ${msg.role === "user"
-                                            ? "bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] border border-white/10 text-white rounded-tr-sm"
-                                            : "bg-white/10 border border-white/10 text-slate-100 rounded-tl-sm hover:bg-white/15"
+                                        ? "bg-gradient-to-br from-[#074C6B] to-[#0B2B3D] border border-white/10 text-white rounded-tr-sm"
+                                        : "bg-white/10 border border-white/10 text-slate-100 rounded-tl-sm hover:bg-white/15"
                                         }`}
                                 >
                                     <div className="prose prose-invert max-w-none">

@@ -1,10 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* AURORA Career Intelligence - Prussian Blue Professional Design */
-
 @layer base {
+  :root {
+    /* ... existing vars ... */
+  }
+
+  /* ... */
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.01em;
+    font-size: 1.27rem;
+  }
+
   :root {
     /* Prussian Blue Color Palette */
     --prussian-blue: 200 70% 14%;
@@ -128,7 +143,8 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 11px; /* Reduced by 30% from 16px */
+    font-size: 11px;
+    /* Reduced by 30% from 16px */
   }
 
   body {
@@ -137,7 +153,8 @@
     font-feature-settings: "cv11", "ss01", "ss03";
     text-rendering: optimizeLegibility;
     letter-spacing: -0.01em;
-    font-size: 1.27rem; /* ~14px base for body */
+    font-size: 1.27rem;
+    /* ~14px base for body */
   }
 
   /* San Francisco Font Utility */
@@ -152,12 +169,12 @@
 }
 
 @layer components {
+
   /* Premium Glass Card */
   .glass-card {
-    background: linear-gradient(145deg, 
-      hsl(0 0% 100% / 0.9) 0%, 
-      hsl(200 20% 97% / 0.8) 100%
-    );
+    background: linear-gradient(145deg,
+        hsl(0 0% 100% / 0.9) 0%,
+        hsl(200 20% 97% / 0.8) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid hsl(200 20% 88% / 0.6);
@@ -168,7 +185,7 @@
   .gradient-border {
     position: relative;
     background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(135deg, hsl(200 50% 76%), hsl(200 85% 22%), hsl(200 35% 51%)) border-box;
+      linear-gradient(135deg, hsl(200 50% 76%), hsl(200 85% 22%), hsl(200 35% 51%)) border-box;
     border: 2px solid transparent;
   }
 
@@ -250,6 +267,7 @@
 }
 
 @layer utilities {
+
   /* Hero gradient background */
   .bg-hero-gradient {
     background: var(--gradient-hero);
@@ -304,17 +322,34 @@
   }
 
   /* Stagger children animations */
-  .stagger-children > * {
+  .stagger-children>* {
     opacity: 0;
     animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-  .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
-  .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
-  .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
-  .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
-  .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+  .stagger-children>*:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .stagger-children>*:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .stagger-children>*:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .stagger-children>*:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+
+  .stagger-children>*:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+
+  .stagger-children>*:nth-child(6) {
+    animation-delay: 0.6s;
+  }
 
   /* Blur backdrop */
   .backdrop-blur-premium {
@@ -349,145 +384,223 @@
 
 /* Keyframes */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px); 
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes fadeInDown {
-  from { 
-    opacity: 0; 
-    transform: translateY(-30px); 
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes slideInLeft {
-  from { 
-    opacity: 0; 
-    transform: translateX(-40px); 
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
 @keyframes slideInRight {
-  from { 
-    opacity: 0; 
-    transform: translateX(40px); 
+  from {
+    opacity: 0;
+    transform: translateX(40px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
 @keyframes scaleUp {
-  from { 
-    opacity: 0; 
-    transform: scale(0.9); 
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  to { 
-    opacity: 1; 
-    transform: scale(1); 
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 @keyframes bounceIn {
-  0% { 
-    opacity: 0; 
-    transform: scale(0.3); 
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
   }
-  50% { 
-    transform: scale(1.05); 
+
+  50% {
+    transform: scale(1.05);
   }
-  70% { 
-    transform: scale(0.9); 
+
+  70% {
+    transform: scale(0.9);
   }
-  100% { 
-    opacity: 1; 
-    transform: scale(1); 
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 @keyframes float {
-  0%, 100% { 
-    transform: translateY(0px); 
+
+  0%,
+  100% {
+    transform: translateY(0px);
   }
-  50% { 
-    transform: translateY(-20px); 
+
+  50% {
+    transform: translateY(-20px);
   }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { 
-    box-shadow: 0 0 20px hsl(200 50% 76% / 0.3); 
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px hsl(200 50% 76% / 0.3);
   }
-  50% { 
-    box-shadow: 0 0 40px hsl(200 50% 76% / 0.6); 
+
+  50% {
+    box-shadow: 0 0 40px hsl(200 50% 76% / 0.6);
   }
 }
 
 @keyframes shimmer {
-  0% { 
-    background-position: -200% 0; 
+  0% {
+    background-position: -200% 0;
   }
-  100% { 
-    background-position: 200% 0; 
+
+  100% {
+    background-position: 200% 0;
   }
 }
 
 /* New Hero Animations */
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes float-random {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(10px, -10px) rotate(90deg); }
-  50% { transform: translate(0, -20px) rotate(180deg); }
-  75% { transform: translate(-10px, -10px) rotate(270deg); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(10px, -10px) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(0, -20px) rotate(180deg);
+  }
+
+  75% {
+    transform: translate(-10px, -10px) rotate(270deg);
+  }
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 
 @keyframes glow {
-  0%, 100% { text-shadow: 0 0 20px rgba(161, 209, 229, 0.5); }
-  50% { text-shadow: 0 0 40px rgba(161, 209, 229, 0.8), 0 0 60px rgba(161, 209, 229, 0.4); }
+
+  0%,
+  100% {
+    text-shadow: 0 0 20px rgba(161, 209, 229, 0.5);
+  }
+
+  50% {
+    text-shadow: 0 0 40px rgba(161, 209, 229, 0.8), 0 0 60px rgba(161, 209, 229, 0.4);
+  }
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes scroll-down {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(8px); opacity: 0; }
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
 }
 
 .animate-spin-slow {
@@ -524,12 +637,10 @@
 
 /* Loading shimmer effect */
 .shimmer {
-  background: linear-gradient(
-    90deg, 
-    hsl(200 20% 94%) 0%, 
-    hsl(200 20% 98%) 50%, 
-    hsl(200 20% 94%) 100%
-  );
+  background: linear-gradient(90deg,
+      hsl(200 20% 94%) 0%,
+      hsl(200 20% 98%) 50%,
+      hsl(200 20% 94%) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -561,13 +672,23 @@
 
 /* Infinite Marquee Animations */
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-33.333%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
 }
 
 @keyframes marquee-reverse {
-  0% { transform: translateX(-33.333%); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(-33.333%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .animate-marquee {
