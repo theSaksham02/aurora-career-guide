@@ -19,7 +19,7 @@ export function Navbar() {
   // Detect scroll for navbar background
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -27,33 +27,41 @@ export function Navbar() {
 
   // Dynamic styles based on page and scroll
   const isDarkBg = isLandingPage && !scrolled;
-  const navBg = isDarkBg 
-    ? "bg-[#0B2B3D]/90 backdrop-blur-md" 
-    : "bg-white/95 backdrop-blur-md border-b border-border shadow-sm";
-  const textColor = isDarkBg ? "text-white" : "text-[#0B2B3D]";
-  const textMuted = isDarkBg ? "text-white/70" : "text-[#5D93A9]";
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
-      <div className="container mx-auto px-4 sm:px-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-3 sm:p-4">
+      <div className={`container mx-auto px-4 sm:px-6 rounded-2xl transition-all duration-500 ${
+        isDarkBg 
+          ? 'bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)]' 
+          : 'bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_8px_32px_rgba(11,43,61,0.15)]'
+      }`}>
         <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className={`text-2xl sm:text-2xl lg:text-3xl font-bold tracking-tight ${textColor}`}>
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0B2B3D] to-[#074C6B] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+              <span className="text-white font-bold text-lg">A</span>
+            </div>
+            <div className={`text-xl sm:text-2xl font-bold tracking-tight transition-colors ${
+              isDarkBg ? 'text-white' : 'text-[#0B2B3D]'
+            }`}>
               AURORA
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-10">
+          <div className="hidden lg:flex items-center gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`text-base font-medium transition-all duration-200 hover:scale-105 ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   location.pathname === link.href
-                    ? `${textColor} font-semibold`
-                    : `${textMuted} hover:${textColor}`
+                    ? isDarkBg 
+                      ? 'bg-white/20 text-white shadow-inner'
+                      : 'bg-[#0B2B3D]/10 text-[#0B2B3D]'
+                    : isDarkBg
+                      ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                      : 'text-[#5D93A9] hover:bg-[#0B2B3D]/5 hover:text-[#0B2B3D]'
                 }`}
               >
                 {link.label}
@@ -62,38 +70,45 @@ export function Navbar() {
           </div>
 
           {/* Profile & CTA */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             {isLandingPage ? (
               <Button 
-                variant={isDarkBg ? "outline" : "default"}
-                size="lg"
                 asChild
-                className={isDarkBg 
-                  ? "border-2 border-white text-white hover:bg-white hover:text-[#0B2B3D] font-semibold px-6" 
-                  : "bg-[#0B2B3D] text-white hover:bg-[#074C6B] font-semibold px-6"
-                }
+                className={`rounded-xl px-5 py-2 font-semibold transition-all duration-300 ${
+                  isDarkBg 
+                    ? 'bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white hover:text-[#0B2B3D] shadow-lg' 
+                    : 'bg-gradient-to-r from-[#0B2B3D] to-[#074C6B] text-white hover:shadow-xl hover:scale-105'
+                }`}
               >
                 <Link to="/dashboard">Get Started</Link>
               </Button>
             ) : (
               <Link to="/profile">
-                <Button variant="ghost" size="icon" className={textColor}>
-                  <User className="h-6 w-6" />
-                </Button>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isDarkBg 
+                    ? 'bg-white/10 hover:bg-white/20 text-white' 
+                    : 'bg-[#0B2B3D]/5 hover:bg-[#0B2B3D]/10 text-[#0B2B3D]'
+                }`}>
+                  <User className="h-5 w-5" />
+                </div>
               </Link>
             )}
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-3 -mr-2 rounded-lg hover:bg-white/10 transition-colors"
+            className={`lg:hidden p-2.5 rounded-xl transition-all duration-300 ${
+              isDarkBg 
+                ? 'bg-white/10 hover:bg-white/20 text-white' 
+                : 'bg-[#0B2B3D]/5 hover:bg-[#0B2B3D]/10 text-[#0B2B3D]'
+            }`}
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X className={`h-7 w-7 ${textColor}`} />
+              <X className="h-6 w-6" />
             ) : (
-              <Menu className={`h-7 w-7 ${textColor}`} />
+              <Menu className="h-6 w-6" />
             )}
           </button>
         </div>
@@ -101,7 +116,7 @@ export function Navbar() {
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="lg:hidden py-4 animate-fade-in">
-            <div className="flex flex-col gap-2 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
+            <div className="flex flex-col gap-2 bg-white/80 backdrop-blur-xl rounded-2xl p-5 shadow-[0_8px_32px_rgba(11,43,61,0.15)] border border-white/50">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
