@@ -128,7 +128,7 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 16px;
+    font-size: 11px; /* Reduced by 30% from 16px */
   }
 
   body {
@@ -137,6 +137,7 @@
     font-feature-settings: "cv11", "ss01", "ss03";
     text-rendering: optimizeLegibility;
     letter-spacing: -0.01em;
+    font-size: 1.27rem; /* ~14px base for body */
   }
 
   /* San Francisco Font Utility */

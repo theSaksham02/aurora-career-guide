@@ -625,27 +625,161 @@ ${this.state.questionsAsked >= 3 && this.state.stage === 'unknown' ? 'IMPORTANT:
   }
 
   /**
-   * Fallback response when AI fails
+   * Fallback response when AI fails - still provides intelligent stage-aware guidance
    */
   private getFallbackResponse(): AgentMessage {
+    // Stage-specific fallback responses
+    const fallbacks: Record<CareerStage, string> = {
+      exploring: `Great question! Since you're exploring careers, here's what I recommend:
+
+**1. Self-Assessment First**
+- List your top 5 skills and interests
+- Identify problems you enjoy solving
+- Consider your work style preferences (remote, collaborative, independent)
+
+**2. Research Roles**
+- Look at job descriptions on LinkedIn/Indeed
+- Read "day in the life" articles
+- Talk to people in roles that interest you
+
+**3. Build Skills**
+- Take online courses (Coursera, Udemy)
+- Work on personal projects
+- Contribute to open source if in tech
+
+**Next step**: Pick ONE role that interests you and research what skills it requires. Would you like help with that?`,
+
+      applied: `You've applied — that's great! Here's what to do while waiting:
+
+**1. Track Your Applications**
+- Use a spreadsheet or tool like Notion
+- Note company, role, date applied, status
+
+**2. Prepare for Next Steps**
+- Research the company deeply
+- Prepare your "tell me about yourself" story
+- Have 3-5 questions ready
+
+**3. Keep Applying**
+- Don't wait on one application
+- Aim for 5-10 quality applications per week
+
+**Timeline**: Most companies respond within 1-2 weeks. If no response after 2 weeks, a polite follow-up email is appropriate.`,
+
+      interviewing: `Interview prep is crucial! Here's my guidance:
+
+**Before the Interview**
+1. Research the company (mission, recent news, culture)
+2. Review the job description thoroughly
+3. Prepare 5+ STAR stories (Situation, Task, Action, Result)
+4. Test your tech setup if virtual
+
+**Common Questions to Prepare**
+- "Tell me about yourself" (2-3 minutes)
+- "Why this company/role?"
+- "Tell me about a challenging project"
+- "Where do you see yourself in 5 years?"
+
+**Day of Interview**
+- Arrive 10 min early (or log in early if virtual)
+- Have questions ready for them
+- Send thank you email within 24 hours
+
+**Your readiness score**: Based on typical preparation, I'd estimate 6/10. Want me to help you practice specific areas?`,
+
+      offered: `Congratulations on your offer! 🎉 Here's how to evaluate it:
+
+**1. Beyond the Salary**
+- Benefits (health, 401k, PTO)
+- Growth opportunities
+- Team and manager quality
+- Work-life balance
+- Remote/hybrid options
+
+**2. Negotiation Tips**
+- It's normal and expected to negotiate
+- Focus on total compensation, not just base
+- Be professional and positive
+- Have a number in mind before you negotiate
+
+**3. Making the Decision**
+- Consider career growth, not just immediate pay
+- Trust your gut about the team/culture
+- It's okay to ask for more time to decide (24-48 hours is normal)
+
+**Important**: For specific compensation questions, please speak with the HR team directly.`,
+
+      new_hire: `Welcome to your new role! 🚀 Here's your game plan:
+
+**First Week**
+- Focus on learning, not impressing
+- Meet your team members 1-on-1
+- Understand the tools and processes
+- Ask questions freely (there are no stupid questions!)
+
+**First 30 Days**
+- Understand team goals and how you contribute
+- Complete any onboarding training
+- Find a "buddy" or mentor
+- Start on small, meaningful tasks
+
+**First 90 Days**
+- Aim for your first small win
+- Build relationships across teams
+- Seek feedback proactively
+- Document what you learn
+
+**Key tip**: The best new hires listen before they suggest changes. Learn the "why" behind current processes first.`,
+
+      professional: `Ready to level up! Here's your growth framework:
+
+**1. Understand the Path**
+- Ask your manager about promotion criteria
+- Look at job descriptions for the next level
+- Identify skill gaps honestly
+
+**2. Visibility Matters**
+- Document your wins and impact
+- Share learnings with the team
+- Take on cross-functional projects
+
+**3. Build Your Network**
+- Find mentors in roles you want
+- Help others (it comes back)
+- Stay current in your field
+
+**4. Internal Mobility**
+- Explore other teams/roles internally
+- Express interest to your manager
+- Many companies prefer internal candidates
+
+**Next step**: Schedule a career conversation with your manager to understand what success looks like at the next level.`,
+
+      unknown: `I'd love to help you! To give you the best guidance, let me know where you are:
+
+🔍 **Exploring** — Looking at career options
+📋 **Applied** — Submitted applications, waiting to hear back
+🎤 **Interviewing** — Preparing for or going through interviews
+🎉 **Offered** — Received an offer, evaluating
+🚀 **New hire** — Just started a new job
+📈 **Growing** — Looking to advance in current career
+
+Which stage resonates with you?`
+    };
+
+    const content = fallbacks[this.state.stage] || fallbacks.unknown;
+
     return {
       id: this.generateId(),
       role: 'aurora',
-      content: `I'm having trouble connecting right now. Let me give you some general guidance:
-
-If you're **exploring careers** — start by listing your top skills and interests. What problems do you enjoy solving?
-
-If you're **interviewing** — research the company, practice your STAR stories, and prepare thoughtful questions.
-
-If you're **starting a new role** — focus on listening, learning, and building relationships in your first 30 days.
-
-Feel free to ask me something specific and I'll try again!`,
+      content,
       timestamp: new Date(),
-      quickActions: [
-        { label: '🔄 Try again', value: 'retry' },
-        { label: '🔍 Explore Careers', value: 'stage_exploring' },
+      quickActions: this.state.stage === 'unknown' ? [
+        { label: '🔍 Exploring Careers', value: 'stage_exploring' },
+        { label: '📋 Applied to a Role', value: 'stage_applied' },
         { label: '🎤 Interview Prep', value: 'stage_interviewing' },
-      ],
+        { label: '🚀 Starting New Job', value: 'stage_new_hire' },
+      ] : undefined,
     };
   }
 
